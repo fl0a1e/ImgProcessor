@@ -77,7 +77,7 @@ void MainWindow::on_action_Open_triggered() {
 
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
-    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "E:/Qt/qtworks/MainWindow/images", tr("图像文件(*.jpg *.png *.bmp)"));
+    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
     if(srcDirPathListS.size()>0)
     {
         ui->tabWidget->setCurrentIndex(0);
