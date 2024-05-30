@@ -30,7 +30,9 @@ public:
     int index =0; //图片index
 
 private slots:
-    void on_action_Open_triggered();
+    void initDockSize();
+    void on_action_open_triggered();
+    void on_action_save_triggered();
     void on_pushButton_select_clicked();
     void on_pushButton_gray_clicked();
     void on_pushButton_edge_detection_clicked();

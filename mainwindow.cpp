@@ -31,6 +31,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// 初始化 dock 大小
+// 没效果
+void MainWindow::initDockSize() {
+//     QList<QDockWidget*> temp_docklist;
+//     temp_docklist << ui->dock1;
+//     //QList<int> temp_sizelist;
+//     //temp_sizelist<< static_cast<int>(this->geometry().width() * 0.5);
+//     this->resizeDocks(temp_docklist, {130}, Qt::Horizontal);
+}
+
+
 //图片居中显示,图片大小与label大小相适应
 QImage MainWindow::ImageCenter(QImage qimage,QLabel *qLabel)
 {
@@ -52,7 +63,7 @@ QImage MainWindow::ImageCenter(QImage qimage,QLabel *qLabel)
 }
 
 
-void MainWindow::on_action_Open_triggered() {
+void MainWindow::on_action_open_triggered() {
     QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
     if(srcDirPathListS.size()>0)
     {
@@ -72,6 +83,25 @@ void MainWindow::on_action_Open_triggered() {
         //状态栏显示图片路径
         //QLabel *label=ui->statusBar->findChild<QLabel *>("status");
         ui->statusbar->showMessage(srcDirPath);
+    }
+}
+
+void MainWindow::on_action_save_triggered() {
+    if(!ui->label_show->pixmap().isNull()){
+        QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF")); //选择路径
+        if (filename.isEmpty()) {
+            return;
+        }
+        else{
+            if (!(ui->label_show->pixmap().toImage().save(filename))) //保存图像
+            {
+                QMessageBox::information(this,tr("图片保存成功！"),tr("图片保存失败！"));
+                return;
+            }
+            ui->statusbar->showMessage("图片保存成功！");
+        }
+    }else{
+        QMessageBox::warning(nullptr, "提示", "请先打开图片！", QMessageBox::Yes |  QMessageBox::Yes);
     }
 }
 
