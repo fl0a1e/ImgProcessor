@@ -23,6 +23,7 @@ public:
 
     QImage ImageCenter(QImage  qimage,QLabel *qLabel);//调整图片比例
     QImage gray(QImage image);//灰度化
+    QImage gamma(QImage image); // gamma
     QImage AdjustContrast(QImage image, int value);//调整对比度
     QImage AdjustSaturation(QImage image, int value);//调整饱和度
     QImage EdgeDetection(QImage image);//边缘检测
@@ -33,8 +34,14 @@ private slots:
     void initDockSize();
     void on_action_open_triggered();
     void on_action_save_triggered();
+    void on_action_flower_triggered();
+    void on_action_lena_triggered();
     void on_pushButton_select_clicked();
     void on_pushButton_gray_clicked();
+    void on_pushButton_gamma_clicked();
+    void on_pushButton_turnleft_clicked();
+    void on_pushButton_turnright_clicked();
+    void on_pushButton_mirrored_clicked();
     void on_pushButton_edge_detection_clicked();
     void on_horizontalSlider_Contrast_valueChanged(int value);
     void on_horizontalSlider_light_valueChanged(int value);
@@ -44,6 +51,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QString origin_path;//原图
+    QString origin_path;//原图路径
+    QImage origin_img; //原图
+    QImage cur_img;
 };
 #endif // MAINWINDOW_H

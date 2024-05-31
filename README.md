@@ -3,5 +3,3 @@
 目前效果
 
 ![demo](./images/demo.png)
-
-![demo_gray](./images/demo_gray.png)

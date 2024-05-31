@@ -2,5 +2,7 @@
     <qresource prefix="/sys">
         <file>images/loading.gif</file>
         <file>StyleSheet.qss</file>
+        <file>images/flower.jpg</file>
+        <file>images/lena.png</file>
     </qresource>
 </RCC>

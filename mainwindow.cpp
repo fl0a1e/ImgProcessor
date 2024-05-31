@@ -19,11 +19,16 @@ using namespace std;
 #include <QtCore/qmath.h>
 #include <QTimer>
 
+#define QMESSAGE_BOX_NO_IMG QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);    // 禁止最大化按钮
+    setFixedSize(this->width(),this->height());                     // 禁止拖动窗口大小
 }
 
 MainWindow::~MainWindow()
@@ -105,6 +110,29 @@ void MainWindow::on_action_save_triggered() {
     }
 }
 
+// 快速开始
+void MainWindow::on_action_flower_triggered() {
+    QString srcDirPath = ":/sys/images/flower.jpg";
+    QImage image(srcDirPath);
+    QImage Image=ImageCenter(image,ui->label_show);
+    ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    ui->label_show->setAlignment(Qt::AlignCenter);
+    origin_path=srcDirPath;
+
+    ui->statusbar->showMessage(srcDirPath);
+}
+
+void MainWindow::on_action_lena_triggered() {
+    QString srcDirPath = ":/sys/images/lena.png";
+    QImage image(srcDirPath);
+    QImage Image=ImageCenter(image,ui->label_show);
+    ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    ui->label_show->setAlignment(Qt::AlignCenter);
+    origin_path=srcDirPath;
+
+    ui->statusbar->showMessage(srcDirPath);
+}
+
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
     QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
@@ -123,8 +151,6 @@ void MainWindow::on_pushButton_select_clicked() {
         ui->label_show->setAlignment(Qt::AlignCenter);
         origin_path=srcDirPath;
 
-        //状态栏显示图片路径
-        //QLabel *label=ui->statusBar->findChild<QLabel *>("status");
         ui->statusbar->showMessage(srcDirPath);
     }
 }
@@ -146,7 +172,7 @@ void MainWindow::on_pushButton_save_clicked() {
             ui->statusbar->showMessage("图片保存成功！");
         }
     }else{
-        QMessageBox::warning(nullptr, "提示", "请先打开图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
@@ -159,12 +185,12 @@ void MainWindow::on_pushButton_origin_clicked()
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
     }else{
-        QMessageBox::warning(nullptr, "提示", "请先打开图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
 
-//灰度化
+// 灰度
 QImage MainWindow::gray(QImage image){
     QImage newImage =image.convertToFormat(QImage::Format_ARGB32);
     QColor oldColor;
@@ -174,18 +200,18 @@ QImage MainWindow::gray(QImage image){
         for(int x = 0; x < newImage.width(); x++)
         {
             oldColor = QColor(image.pixel(x,y));
-            int average = (oldColor.red() + oldColor.green() + oldColor.blue()) / 3;
+            int average = oldColor.red() * 0.11 + oldColor.green() * 0.59 + oldColor.blue() * 0.3;
             newImage.setPixel(x, y, qRgb(average, average, average));
         }
     }
     return newImage;
 }
 
-//灰度化
+// 灰度
 void MainWindow::on_pushButton_gray_clicked()
 {
     if(origin_path!=nullptr){
-        QImage image(origin_path);
+        QImage image(ui->label_show->pixmap().toImage());
 
         QImage images=gray(image);
 
@@ -194,7 +220,54 @@ void MainWindow::on_pushButton_gray_clicked()
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
-        QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 水平镜像
+void MainWindow::on_pushButton_mirrored_clicked()
+{
+    if(!ui->label_show->pixmap().isNull()){
+        QImage images(ui->label_show->pixmap().toImage());
+        images = images.mirrored(true, false);
+        ui->label_show->setPixmap(QPixmap::fromImage(images));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+        //cur_img = ui->label_show->pixmap().toImage();
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 顺时针旋转
+void MainWindow::on_pushButton_turnright_clicked() {
+    if(!ui->label_show->pixmap().isNull()){
+        QImage images(ui->label_show->pixmap().toImage());
+        QTransform matrix;
+        matrix.rotate(90.0);//顺时针旋转90度
+        images= images.transformed(matrix,Qt::FastTransformation);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(images));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 逆时针旋转
+void MainWindow::on_pushButton_turnleft_clicked() {
+    if(!ui->label_show->pixmap().isNull()){
+        QImage images(ui->label_show->pixmap().toImage());
+        QTransform matrix;
+        matrix.rotate(-90.0);//逆时针旋转90度
+        images= images.transformed(matrix,Qt::FastTransformation);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(images));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
@@ -245,18 +318,54 @@ QImage MainWindow::EdgeDetection(QImage image) {
 void MainWindow::on_pushButton_edge_detection_clicked()
 {
     if(origin_path!=nullptr){
-        QImage image(origin_path);
+        QImage image(ui->label_show->pixmap().toImage());
         QImage newImage = EdgeDetection(image);
         QImage Image=ImageCenter(newImage,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
-        QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
-//亮度滑块
+// 伽马变换
+QImage MainWindow::gamma(QImage image) {
+    double d=1.2;
+    QColor color;
+    int height = image.height();
+    int width = image.width();
+    for (int i=0;i<width;i++){
+        for(int j=0;j<height;j++){
+            color = QColor(image.pixel(i,j));
+            double r = color.red();
+            double g = color.green();
+            double b = color.blue();
+            int R = qBound(0,(int)qPow(r,d),255);
+            int G = qBound(0,(int)qPow(g,d),255);
+            int B = qBound(0,(int)qPow(b,d),255);
+            image.setPixel(i,j,qRgb(R,G,B));
+        }
+    }
+    return image;
+}
+
+// 伽马变换
+void MainWindow::on_pushButton_gamma_clicked() {
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        QImage images=gamma(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 亮度滑块
 void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
     if(origin_path!=nullptr){
         QImage image(origin_path);
@@ -279,7 +388,7 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
-        QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
@@ -344,7 +453,7 @@ void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value)
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
-        QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
@@ -413,6 +522,6 @@ void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
-        QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
