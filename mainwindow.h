@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QImage>
 #include <QMessageBox>
+#include "cropper.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -52,6 +53,8 @@ private slots:
     void on_pushButton_origin_clicked();
     void on_pushButton_equalizeHist_clicked();
     void on_horizontalSlider_gaussianFilter_valueChanged(int value);
+    void on_pushButton_cropper_clicked();
+    void cropImgShow();
 
 private:
     Ui::MainWindow *ui;
@@ -59,5 +62,7 @@ private:
     QImage origin_img; //原图
     QImage cur_img;
     QMap<QString , int > slider_save; // 防止滑块反复触发保存当前图片
+    ImageCropperLabel* imgCropperLabel;
+    bool cropper;
 };
 #endif // MAINWINDOW_H

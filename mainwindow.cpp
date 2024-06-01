@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "cropper.h"
 #include <QToolButton>
 #include <QApplication>
 #include <QSpinBox>
@@ -20,10 +21,13 @@ using namespace std;
 #include <QTimer>
 
 #define QMESSAGE_BOX_NO_IMG QMessageBox::warning(nullptr, "提示", "请先选择一张图片！", QMessageBox::Yes |  QMessageBox::Yes);
+#define QMESSAGE_BOX_CROPPING if(cropper){QMessageBox::warning(nullptr, "提示", "请先完成裁剪！", QMessageBox::Yes |  QMessageBox::Yes);return;};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , imgCropperLabel(nullptr)
+    , cropper(false)
 {
     ui->setupUi(this);
 
@@ -35,11 +39,14 @@ MainWindow::MainWindow(QWidget *parent)
     slider_save["light"] = 0;
     slider_save["contrast"] = 0;
     slider_save["saturation"] = 0;
+
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete imgCropperLabel;
 }
 
 //图片居中显示,图片大小与label大小相适应
@@ -64,6 +71,7 @@ QImage MainWindow::ImageCenter(QImage qimage,QLabel *qLabel)
 
 
 void MainWindow::on_action_open_triggered() {
+    QMESSAGE_BOX_CROPPING
     QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
     if(srcDirPathListS.size()>0)
     {
@@ -85,6 +93,7 @@ void MainWindow::on_action_open_triggered() {
 }
 
 void MainWindow::on_action_save_triggered() {
+    QMESSAGE_BOX_CROPPING
     if(!ui->label_show->pixmap().isNull()){
         QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF")); //选择路径
         if (filename.isEmpty()) {
@@ -105,6 +114,7 @@ void MainWindow::on_action_save_triggered() {
 
 // 快速开始
 void MainWindow::on_action_flower_triggered() {
+    QMESSAGE_BOX_CROPPING
     QString srcDirPath = ":/sys/images/flower.jpg";
     QImage image(srcDirPath);
     QImage Image=ImageCenter(image,ui->label_show);
@@ -116,6 +126,7 @@ void MainWindow::on_action_flower_triggered() {
 }
 
 void MainWindow::on_action_lena_triggered() {
+    QMESSAGE_BOX_CROPPING
     QString srcDirPath = ":/sys/images/lena.png";
     QImage image(srcDirPath);
     QImage Image=ImageCenter(image,ui->label_show);
@@ -127,6 +138,7 @@ void MainWindow::on_action_lena_triggered() {
 }
 
 void MainWindow::on_action_cameraman_triggered() {
+    QMESSAGE_BOX_CROPPING
     QString srcDirPath = ":/sys/images/cameraman.jpg";
     QImage image(srcDirPath);
     QImage Image=ImageCenter(image,ui->label_show);
@@ -139,6 +151,7 @@ void MainWindow::on_action_cameraman_triggered() {
 
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
+    QMESSAGE_BOX_CROPPING
     QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp *.tif)"));
     if(srcDirPathListS.size()>0)
     {
@@ -162,6 +175,7 @@ void MainWindow::on_pushButton_select_clicked() {
 
 //保存
 void MainWindow::on_pushButton_save_clicked() {
+    QMESSAGE_BOX_CROPPING
     if(!ui->label_show->pixmap().isNull()){
         QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF")); //选择路径
         if (filename.isEmpty()) {
@@ -183,6 +197,7 @@ void MainWindow::on_pushButton_save_clicked() {
 //显示原图按钮
 void MainWindow::on_pushButton_origin_clicked()
 {
+    QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         // 先重置滑块
         ui->horizontalSlider_gaussianFilter->setValue(0);
@@ -229,6 +244,7 @@ QImage MainWindow::gray(QImage image){
 // 灰度
 void MainWindow::on_pushButton_gray_clicked()
 {
+    QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
 
@@ -246,6 +262,7 @@ void MainWindow::on_pushButton_gray_clicked()
 // 水平镜像
 void MainWindow::on_pushButton_mirrored_clicked()
 {
+    QMESSAGE_BOX_CROPPING
     if(!ui->label_show->pixmap().isNull()){
         QImage images(ui->label_show->pixmap().toImage());
         images = images.mirrored(true, false);
@@ -260,6 +277,7 @@ void MainWindow::on_pushButton_mirrored_clicked()
 
 // 顺时针旋转
 void MainWindow::on_pushButton_turnright_clicked() {
+    QMESSAGE_BOX_CROPPING
     if(!ui->label_show->pixmap().isNull()){
         QImage images(ui->label_show->pixmap().toImage());
         QTransform matrix;
@@ -276,6 +294,7 @@ void MainWindow::on_pushButton_turnright_clicked() {
 
 // 逆时针旋转
 void MainWindow::on_pushButton_turnleft_clicked() {
+    QMESSAGE_BOX_CROPPING
     if(!ui->label_show->pixmap().isNull()){
         QImage images(ui->label_show->pixmap().toImage());
         QTransform matrix;
@@ -336,6 +355,7 @@ QImage MainWindow::EdgeDetection(QImage image) {
 //边缘检测
 void MainWindow::on_pushButton_edge_detection_clicked()
 {
+    QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
         QImage newImage = EdgeDetection(image);
@@ -371,6 +391,7 @@ QImage MainWindow::gamma(QImage image) {
 
 // 伽马变换
 void MainWindow::on_pushButton_gamma_clicked() {
+    QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
         QImage images=gamma(image);
@@ -386,6 +407,7 @@ void MainWindow::on_pushButton_gamma_clicked() {
 
 // 亮度滑块
 void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
+    QMESSAGE_BOX_CROPPING
     if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
         if(slider_save["light"] == 0){
@@ -468,6 +490,7 @@ QImage MainWindow::AdjustContrast(QImage image, int value)
 
 //对比度滑块
 void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
+    QMESSAGE_BOX_CROPPING
     if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
         if(slider_save["contrast"] == 0){
@@ -542,6 +565,7 @@ QImage MainWindow::AdjustSaturation(QImage Img, int iSaturateValue)
 
 //饱和度滑块
 void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
+    QMESSAGE_BOX_CROPPING
     if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
         if(slider_save["saturation"] == 0){
@@ -614,6 +638,7 @@ QImage MainWindow::equalizeHistogram(QImage image) {
 }
 
 void MainWindow::on_pushButton_equalizeHist_clicked() {
+    QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
         QImage newImage = equalizeHistogram(image);
@@ -681,7 +706,9 @@ QImage MainWindow::GaussianFilter(QImage image, double sigma) {
 
 // 高斯模糊滑块
 void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
+    QMESSAGE_BOX_CROPPING
     if(!value){return;} // 加速重置
+
     if(origin_path!=nullptr){
         if(slider_save["gaussian"] == 0){
             cur_img = ui->label_show->pixmap().toImage();
@@ -696,4 +723,56 @@ void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
     else{
         QMESSAGE_BOX_NO_IMG
     }
+}
+
+// 裁剪模块
+void MainWindow::on_pushButton_cropper_clicked() {
+    if(origin_path!=nullptr){
+        if(!cropper) {
+            // 创建控件，并设置固定大小
+            QPixmap crop_img = ui->label_show->pixmap();
+            imgCropperLabel = new ImageCropperLabel(200, 200, ui->label_show);
+            connect(imgCropperLabel,SIGNAL(croppedImageChanged()),this,SLOT(cropImgShow())); // 信号绑定，接受裁剪框变化信号
+            // 设置（圆形）裁剪器
+            imgCropperLabel->setRectCropper();
+            // 设置原始图像
+            imgCropperLabel->setOriginalImage(crop_img);
+            // 设置输出图像的形状
+            // OutputShape::RECT     --> 矩形（正方形）
+            // OutputShape::ELLIPSE  --> 椭圆形（圆形）
+            imgCropperLabel->setOutputShape(OutputShape::RECT);
+            // 启用不透明效果，裁剪区域外不透明显示（默认启用）
+            imgCropperLabel->enableOpacity(true);
+            // 设置不透明度(0~1的浮点数)
+            imgCropperLabel->setOpacity(0.5);  // 默认: 0.6
+            // 显示四个角(四条边)上的矩形方块，用于捕获鼠标，调整裁剪器的大小（默认显示）
+            imgCropperLabel->setShowDragSquare(true);
+            // 设置四个角(四条边)上的矩形方块的大小，颜色
+            imgCropperLabel->setDragSquareEdge(8);	// 默认: 8
+            imgCropperLabel->setDragSquareColor(Qt::green);  // 默认: Qt::white
+
+            imgCropperLabel->show();
+
+            cropper = true;
+        }else{
+            imgCropperLabel->close();
+            delete imgCropperLabel;
+            imgCropperLabel = nullptr;
+            cropper = false;
+        }
+    }
+    else {
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// SIGNAL：void croppedImageChagned()
+// 用户调整裁剪区域时，会触发 croppedImageChanged() 信号
+// 调用 getCroppedImage() 可以获取裁剪区域的图像
+void MainWindow::cropImgShow() {
+    QPixmap resultImage = imgCropperLabel->getCroppedImage(/*OutputShape::RECT*/);
+    // 显示
+    QImage Image=ImageCenter(resultImage.toImage(), ui->label_show);
+    ui->label_show->setPixmap(resultImage);
+    ui->label_show->setAlignment(Qt::AlignCenter);
 }

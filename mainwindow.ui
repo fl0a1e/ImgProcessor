@@ -124,6 +124,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton_cropper">
+         <property name="text">
+          <string>裁剪</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
