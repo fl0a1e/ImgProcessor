@@ -46,9 +46,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="pushButton_equalizeHist">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>直方均衡</string>
@@ -72,6 +72,20 @@
          </property>
          <property name="text">
           <string>去噪</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>高斯模糊 - 方差调整</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="horizontalSlider_gaussianFilter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -332,6 +346,7 @@
     </property>
     <addaction name="action_flower"/>
     <addaction name="action_lena"/>
+    <addaction name="action_cameraman"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -357,6 +372,11 @@
   <action name="action_lena">
    <property name="text">
     <string>lena</string>
+   </property>
+  </action>
+  <action name="action_cameraman">
+   <property name="text">
+    <string>cameraman</string>
    </property>
   </action>
  </widget>

@@ -29,23 +29,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);    // 禁止最大化按钮
     setFixedSize(this->width(),this->height());                     // 禁止拖动窗口大小
+
+    // 初始化滑块
+    slider_save["gaussian"] = 0;
+    slider_save["light"] = 0;
+    slider_save["contrast"] = 0;
+    slider_save["saturation"] = 0;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-// 初始化 dock 大小
-// 没效果
-void MainWindow::initDockSize() {
-//     QList<QDockWidget*> temp_docklist;
-//     temp_docklist << ui->dock1;
-//     //QList<int> temp_sizelist;
-//     //temp_sizelist<< static_cast<int>(this->geometry().width() * 0.5);
-//     this->resizeDocks(temp_docklist, {130}, Qt::Horizontal);
-}
-
 
 //图片居中显示,图片大小与label大小相适应
 QImage MainWindow::ImageCenter(QImage qimage,QLabel *qLabel)
@@ -85,8 +80,6 @@ void MainWindow::on_action_open_triggered() {
         ui->label_show->setAlignment(Qt::AlignCenter);
         origin_path=srcDirPath;
 
-        //状态栏显示图片路径
-        //QLabel *label=ui->statusBar->findChild<QLabel *>("status");
         ui->statusbar->showMessage(srcDirPath);
     }
 }
@@ -106,7 +99,7 @@ void MainWindow::on_action_save_triggered() {
             ui->statusbar->showMessage("图片保存成功！");
         }
     }else{
-        QMessageBox::warning(nullptr, "提示", "请先打开图片！", QMessageBox::Yes |  QMessageBox::Yes);
+        QMESSAGE_BOX_NO_IMG
     }
 }
 
@@ -133,9 +126,20 @@ void MainWindow::on_action_lena_triggered() {
     ui->statusbar->showMessage(srcDirPath);
 }
 
+void MainWindow::on_action_cameraman_triggered() {
+    QString srcDirPath = ":/sys/images/cameraman.jpg";
+    QImage image(srcDirPath);
+    QImage Image=ImageCenter(image,ui->label_show);
+    ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    ui->label_show->setAlignment(Qt::AlignCenter);
+    origin_path=srcDirPath;
+
+    ui->statusbar->showMessage(srcDirPath);
+}
+
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
-    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
+    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp *.tif)"));
     if(srcDirPathListS.size()>0)
     {
         ui->tabWidget->setCurrentIndex(0);
@@ -180,10 +184,25 @@ void MainWindow::on_pushButton_save_clicked() {
 void MainWindow::on_pushButton_origin_clicked()
 {
     if(origin_path!=nullptr){
+        // 先重置滑块
+        ui->horizontalSlider_gaussianFilter->setValue(0);
+        ui->horizontalSlider_light->setValue(0);
+        ui->horizontalSlider_Contrast->setValue(0);
+        ui->horizontalSlider_Saturation->setValue(0);
+        slider_save["gaussian"] = 0;
+        slider_save["light"] = 0;
+        slider_save["contrast"] = 0;
+        slider_save["saturation"] = 0;
+
+        // 直接读取原图
         QImage image(origin_path);
         QImage Image=ImageCenter(image,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
+
+        // 重置 cur_img
+        cur_img = ui->label_show->pixmap().toImage();
+
     }else{
         QMESSAGE_BOX_NO_IMG
     }
@@ -367,8 +386,12 @@ void MainWindow::on_pushButton_gamma_clicked() {
 
 // 亮度滑块
 void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
+    if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
-        QImage image(origin_path);
+        if(slider_save["light"] == 0){
+            cur_img = ui->label_show->pixmap().toImage();
+        }
+        QImage image(cur_img);
         int red, green, blue;
         int pixels = image.width() * image.height();
         unsigned int *data = (unsigned int *)image.bits();
@@ -386,6 +409,7 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
         QImage Image=ImageCenter(image,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
+        slider_save["light"] = value;
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -443,14 +467,18 @@ QImage MainWindow::AdjustContrast(QImage image, int value)
 }
 
 //对比度滑块
-void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value)
-{
+void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
+    if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
-        QImage image(origin_path);
+        if(slider_save["contrast"] == 0){
+            cur_img = ui->label_show->pixmap().toImage();
+        }
+        QImage image(cur_img);
         QImage images=AdjustContrast(image,value);
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
+        slider_save["contrast"] = value;
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -514,12 +542,156 @@ QImage MainWindow::AdjustSaturation(QImage Img, int iSaturateValue)
 
 //饱和度滑块
 void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
+    if(!value){return;} // 加速重置
     if(origin_path!=nullptr){
-        QImage image(origin_path);
+        if(slider_save["saturation"] == 0){
+            cur_img = ui->label_show->pixmap().toImage();
+        }
+        QImage image(cur_img);
         QImage images=AdjustSaturation(image,value);
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
+        slider_save["saturation"] = value;
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 彩色图像直方图均衡
+QImage MainWindow::equalizeHistogram(QImage image) {
+    int height = image.height();
+    int width = image.width();
+    int numPixels = width * height;
+
+    // 分离 R, G, B 通道
+    QVector<int> histR(256, 0), histG(256, 0), histB(256, 0);
+    QVector<int> cdfR(256, 0), cdfG(256, 0), cdfB(256, 0);
+    QVector<int> equalizedR(256, 0), equalizedG(256, 0), equalizedB(256, 0);
+
+    // 计算直方图
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            QColor color = image.pixelColor(x, y);
+            histR[color.red()]++;
+            histG[color.green()]++;
+            histB[color.blue()]++;
+        }
+    }
+
+    // 计算累积分布函数 (CDF)
+    cdfR[0] = histR[0];
+    cdfG[0] = histG[0];
+    cdfB[0] = histB[0];
+
+    for (int i = 1; i < 256; ++i) {
+        cdfR[i] = cdfR[i - 1] + histR[i];
+        cdfG[i] = cdfG[i - 1] + histG[i];
+        cdfB[i] = cdfB[i - 1] + histB[i];
+    }
+
+    // 均衡化
+    for (int i = 0; i < 256; ++i) {
+        equalizedR[i] = qRound((cdfR[i] - cdfR[0]) * 255.0 / (numPixels - 1));
+        equalizedG[i] = qRound((cdfG[i] - cdfG[0]) * 255.0 / (numPixels - 1));
+        equalizedB[i] = qRound((cdfB[i] - cdfB[0]) * 255.0 / (numPixels - 1));
+    }
+
+    QImage newImage(image.size(), image.format());
+    // 应用均衡化直方图
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            QColor color = image.pixelColor(x, y);
+            int r = equalizedR[color.red()];
+            int g = equalizedG[color.green()];
+            int b = equalizedB[color.blue()];
+            newImage.setPixelColor(x, y, QColor(r, g, b));
+        }
+    }
+
+    return newImage;
+}
+
+void MainWindow::on_pushButton_equalizeHist_clicked() {
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        QImage newImage = equalizeHistogram(image);
+        QImage Image=ImageCenter(newImage,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 高斯滤波
+QImage MainWindow::GaussianFilter(QImage image, double sigma) {
+
+    // 生成高斯核, 默认 5*5 大小
+    int kernelSize = 5;
+    QVector<QVector<double>> kernel(kernelSize, QVector<double>(kernelSize, 0));
+    double sum = 0.0;
+    int halfSize = kernelSize / 2;
+    double sigma2 = sigma * sigma;
+
+    for (int y = -halfSize; y <= halfSize; ++y) {
+        for (int x = -halfSize; x <= halfSize; ++x) {
+            double value = exp(-(x * x + y * y) / (2 * sigma2)) / (2 * M_PI * sigma2);
+            kernel[y + halfSize][x + halfSize] = value;
+            sum += value;
+        }
+    }
+
+    // 归一化核
+    for (int y = 0; y < kernelSize; ++y) {
+        for (int x = 0; x < kernelSize; ++x) {
+            kernel[y][x] /= sum;
+        }
+    }
+
+    // 应用
+    QImage newImage(image.size(), image.format());
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            double sumR = 0, sumG = 0, sumB = 0;
+
+            for (int ky = -halfSize; ky <= halfSize; ++ky) {
+                for (int kx = -halfSize; kx <= halfSize; ++kx) {
+                    int pixelX = qMin(qMax(x + kx, 0), image.width() - 1);
+                    int pixelY = qMin(qMax(y + ky, 0), image.height() - 1);
+
+                    QColor color = image.pixelColor(pixelX, pixelY);
+                    double kernelValue = kernel[ky + halfSize][kx + halfSize];
+
+                    sumR += color.red() * kernelValue;
+                    sumG += color.green() * kernelValue;
+                    sumB += color.blue() * kernelValue;
+                }
+            }
+
+            newImage.setPixelColor(x, y, QColor(static_cast<int>(sumR), static_cast<int>(sumG), static_cast<int>(sumB)));
+        }
+    }
+
+    return newImage;
+}
+
+// 高斯模糊滑块
+void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
+    if(!value){return;} // 加速重置
+    if(origin_path!=nullptr){
+        if(slider_save["gaussian"] == 0){
+            cur_img = ui->label_show->pixmap().toImage();
+        }
+        QImage image(cur_img);
+        QImage images=GaussianFilter(image, static_cast<double>(value * 20.0 / 100.0));
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+        slider_save["gaussian"] = value;
     }
     else{
         QMESSAGE_BOX_NO_IMG

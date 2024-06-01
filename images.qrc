@@ -4,5 +4,6 @@
         <file>StyleSheet.qss</file>
         <file>images/flower.jpg</file>
         <file>images/lena.png</file>
+        <file>images/cameraman.jpg</file>
     </qresource>
 </RCC>
