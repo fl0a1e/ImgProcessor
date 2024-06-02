@@ -415,10 +415,19 @@
     <addaction name="action_lena"/>
     <addaction name="action_cameraman"/>
    </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>主题</string>
+    </property>
+    <addaction name="action_Dark"/>
+    <addaction name="action_ElegantDark"/>
+    <addaction name="action_Ubuntu"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
    <addaction name="menudemo"/>
+   <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_open">
@@ -444,6 +453,21 @@
   <action name="action_cameraman">
    <property name="text">
     <string>cameraman</string>
+   </property>
+  </action>
+  <action name="action_Dark">
+   <property name="text">
+    <string>Dark</string>
+   </property>
+  </action>
+  <action name="action_ElegantDark">
+   <property name="text">
+    <string>ElegantDark</string>
+   </property>
+  </action>
+  <action name="action_Ubuntu">
+   <property name="text">
+    <string>Ubuntu</string>
    </property>
   </action>
  </widget>

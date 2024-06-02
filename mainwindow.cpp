@@ -1055,3 +1055,52 @@ void MainWindow::on_checkBox_B_clicked() {
         QMESSAGE_BOX_NO_IMG
     }
 }
+
+
+void MainWindow::on_action_ElegantDark_triggered() {
+    QFile file(":/sys/ElegantDark.qss");
+    file.open(QFile::ReadOnly);
+    if (file.isOpen())
+    {
+        QString styleSheet = this->styleSheet();
+        styleSheet += QLatin1String(file.readAll());//读取样式表文件
+        this->setStyleSheet(styleSheet);//把文件内容传参
+        file.close();
+    }
+    else
+    {
+        QMessageBox::information(this,"tip","cannot find qss file");
+    }
+}
+
+void MainWindow::on_action_Dark_triggered() {
+    QFile file(":/sys/StyleSheet.qss");
+    file.open(QFile::ReadOnly);
+    if (file.isOpen())
+    {
+        QString styleSheet = this->styleSheet();
+        styleSheet += QLatin1String(file.readAll());//读取样式表文件
+        this->setStyleSheet(styleSheet);//把文件内容传参
+        file.close();
+    }
+    else
+    {
+        QMessageBox::information(this,"tip","cannot find qss file");
+    }
+}
+
+void MainWindow::on_action_Ubuntu_triggered() {
+    QFile file(":/sys/ubuntu.qss");
+    file.open(QFile::ReadOnly);
+    if (file.isOpen())
+    {
+        QString styleSheet = this->styleSheet();
+        styleSheet += QLatin1String(file.readAll());//读取样式表文件
+        this->setStyleSheet(styleSheet);//把文件内容传参
+        file.close();
+    }
+    else
+    {
+        QMessageBox::information(this,"tip","cannot find qss file");
+    }
+}

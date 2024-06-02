@@ -66,6 +66,9 @@ private slots:
     void on_checkBox_R_clicked();
     void on_checkBox_G_clicked();
     void on_checkBox_B_clicked();
+    void on_action_ElegantDark_triggered();
+    void on_action_Dark_triggered();
+    void on_action_Ubuntu_triggered();
 
 private:
     Ui::MainWindow *ui;
