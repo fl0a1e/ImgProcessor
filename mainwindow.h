@@ -45,6 +45,7 @@ private slots:
     void on_action_flower_triggered();
     void on_action_lena_triggered();
     void on_action_cameraman_triggered();
+    void on_action_SP_triggered();
     void on_pushButton_select_clicked();
     void on_pushButton_gray_clicked();
     void on_pushButton_gamma_clicked();

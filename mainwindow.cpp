@@ -149,6 +149,18 @@ void MainWindow::on_action_cameraman_triggered() {
     ui->statusbar->showMessage(srcDirPath);
 }
 
+void MainWindow::on_action_SP_triggered() {
+    QMESSAGE_BOX_CROPPING
+        QString srcDirPath = ":/sys/images/Salt-and-pepper.png";
+    QImage image(srcDirPath);
+    QImage Image=ImageCenter(image,ui->label_show);
+    ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    ui->label_show->setAlignment(Qt::AlignCenter);
+    origin_path=srcDirPath;
+
+    ui->statusbar->showMessage(srcDirPath);
+}
+
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
     QMESSAGE_BOX_CROPPING
