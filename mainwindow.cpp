@@ -199,7 +199,7 @@ void MainWindow::on_pushButton_origin_clicked()
 {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
-        // 先重置滑块
+        // ==== 先重置所有参数 ====
         ui->horizontalSlider_gaussianFilter->setValue(0);
         ui->horizontalSlider_light->setValue(0);
         ui->horizontalSlider_Contrast->setValue(0);
@@ -208,6 +208,11 @@ void MainWindow::on_pushButton_origin_clicked()
         slider_save["light"] = 0;
         slider_save["contrast"] = 0;
         slider_save["saturation"] = 0;
+        ui->checkBox_R->setChecked(true);
+        ui->checkBox_G->setChecked(true);
+        ui->checkBox_B->setChecked(true);
+        // =========================================================
+        // =========================================================
 
         // 直接读取原图
         QImage image(origin_path);
@@ -755,6 +760,9 @@ void MainWindow::on_pushButton_cropper_clicked() {
 
             cropper = true;
         }else{
+            QImage Image=ImageCenter(ui->label_show->pixmap().toImage(),ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
             imgCropperLabel->close();
             delete imgCropperLabel;
             imgCropperLabel = nullptr;
@@ -778,7 +786,7 @@ void MainWindow::cropImgShow() {
 }
 
 // 均值滤波
-QImage MainWindow::meanFilter(QImage inputImage, int kernelSize) {
+QImage MainWindow::meanFilter(const QImage &inputImage, int kernelSize) {
     QImage outputImage = inputImage;
     int halfKernelSize = kernelSize / 2;
 
@@ -886,6 +894,162 @@ void MainWindow::on_pushButton_medianFilter_clicked() {
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 红通道
+QImage MainWindow::redChannel(const QImage &inputImage) {
+    QImage redChannelImage(inputImage.size(), QImage::Format_RGB32);
+
+    for (int y = 0; y < inputImage.height(); ++y) {
+        for (int x = 0; x < inputImage.width(); ++x) {
+            QColor color = inputImage.pixelColor(x, y);
+            int r = color.red();
+            redChannelImage.setPixelColor(x, y, QColor(r, 0, 0));
+        }
+    }
+
+    return redChannelImage;
+}
+
+void MainWindow::on_checkBox_R_clicked() {
+    QMESSAGE_BOX_CROPPING
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        if(ui->checkBox_R->isChecked()) {
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int r = R_img.pixelColor(x, y).red();
+                    int g = color.green();
+                    int b = color.blue();
+                    image.setPixelColor(x, y, QColor(r, g, b));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        } else if(!ui->checkBox_R->isChecked()) {
+            R_img = redChannel(image);
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int g = color.green();
+                    int b = color.blue();
+                    image.setPixelColor(x, y, QColor(0, g, b));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        }
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// 绿通道
+QImage MainWindow::greenChannel(const QImage &inputImage) {
+    QImage greenChannelImage(inputImage.size(), QImage::Format_RGB32);
+
+    for (int y = 0; y < inputImage.height(); ++y) {
+        for (int x = 0; x < inputImage.width(); ++x) {
+            QColor color = inputImage.pixelColor(x, y);
+            int g = color.green();
+            greenChannelImage.setPixelColor(x, y, QColor(0, g, 0));
+        }
+    }
+
+    return greenChannelImage;
+}
+
+void MainWindow::on_checkBox_G_clicked() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        if(ui->checkBox_G->isChecked()) {
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int r = color.red();
+                    int g = G_img.pixelColor(x, y).green();
+                    int b = color.blue();
+                    image.setPixelColor(x, y, QColor(r, g, b));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        } else if(!ui->checkBox_G->isChecked()) {
+            G_img = greenChannel(image);
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int r = color.red();
+                    int b = color.blue();
+                    image.setPixelColor(x, y, QColor(r, 0, b));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        }
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// blue通道
+QImage MainWindow::blueChannel(const QImage &inputImage) {
+    QImage blueChannelImage(inputImage.size(), QImage::Format_RGB32);
+
+    for (int y = 0; y < inputImage.height(); ++y) {
+        for (int x = 0; x < inputImage.width(); ++x) {
+            QColor color = inputImage.pixelColor(x, y);
+            int b = color.blue();
+            blueChannelImage.setPixelColor(x, y, QColor(0, 0, b));
+        }
+    }
+
+    return blueChannelImage;
+}
+
+void MainWindow::on_checkBox_B_clicked() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        if(ui->checkBox_B->isChecked()) {
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int r = color.red();
+                    int g = color.green();
+                    int b = B_img.pixelColor(x, y).blue();
+                    image.setPixelColor(x, y, QColor(r, g, b));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        } else if(!ui->checkBox_B->isChecked()) {
+            B_img = blueChannel(image);
+            for (int y = 0; y < image.height(); ++y) {
+                for (int x = 0; x < image.width(); ++x) {
+                    QColor color = image.pixelColor(x, y);
+                    int r = color.red();
+                    int g = color.green();
+                    image.setPixelColor(x, y, QColor(r, g, 0));
+                }
+            }
+            QImage Image=ImageCenter(image,ui->label_show);
+            ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            ui->label_show->setAlignment(Qt::AlignCenter);
+        }
     }
     else{
         QMESSAGE_BOX_NO_IMG
