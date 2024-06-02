@@ -26,6 +26,9 @@ public:
     QImage gray(QImage image);//灰度化
     QImage gamma(QImage image); // gamma
     QImage equalizeHistogram(QImage image); // 直方图均衡
+    QImage meanFilter(QImage image, int value); // 均值滤波
+    int median(QVector<int> &values);
+    QImage medianFilter(const QImage &inputImage, int value); // 中值滤波
     QImage GaussianFilter(QImage image, double sigma); // 高斯模糊
     QImage AdjustContrast(QImage image, int value);//调整对比度
     QImage AdjustSaturation(QImage image, int value);//调整饱和度
@@ -55,6 +58,8 @@ private slots:
     void on_horizontalSlider_gaussianFilter_valueChanged(int value);
     void on_pushButton_cropper_clicked();
     void cropImgShow();
+    void on_pushButton_meanFilter_clicked();
+    void on_pushButton_medianFilter_clicked();
 
 private:
     Ui::MainWindow *ui;

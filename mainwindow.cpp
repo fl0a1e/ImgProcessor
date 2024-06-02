@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);    // 禁止最大化按钮
     setFixedSize(this->width(),this->height());                     // 禁止拖动窗口大小
 
-    // 初始化滑块
+    // 初始化滑块参数
     slider_save["gaussian"] = 0;
     slider_save["light"] = 0;
     slider_save["contrast"] = 0;
@@ -772,7 +772,122 @@ void MainWindow::on_pushButton_cropper_clicked() {
 void MainWindow::cropImgShow() {
     QPixmap resultImage = imgCropperLabel->getCroppedImage(/*OutputShape::RECT*/);
     // 显示
-    QImage Image=ImageCenter(resultImage.toImage(), ui->label_show);
+    //QImage Image=ImageCenter(resultImage.toImage(), ui->label_show);
     ui->label_show->setPixmap(resultImage);
     ui->label_show->setAlignment(Qt::AlignCenter);
+}
+
+// 均值滤波
+QImage MainWindow::meanFilter(QImage inputImage, int kernelSize) {
+    QImage outputImage = inputImage;
+    int halfKernelSize = kernelSize / 2;
+
+    for (int y = 0; y < inputImage.height(); ++y) {
+        for (int x = 0; x < inputImage.width(); ++x) {
+            int redSum = 0;
+            int greenSum = 0;
+            int blueSum = 0;
+            int count = 0;
+
+            // Iterate through the kernel
+            for (int ky = -halfKernelSize; ky <= halfKernelSize; ++ky) {
+                for (int kx = -halfKernelSize; kx <= halfKernelSize; ++kx) {
+                    int pixelX = clamp(x + kx, 0, inputImage.width() - 1);
+                    int pixelY = clamp(y + ky, 0, inputImage.height() - 1);
+
+                    QColor color = inputImage.pixelColor(pixelX, pixelY);
+                    redSum += color.red();
+                    greenSum += color.green();
+                    blueSum += color.blue();
+                    ++count;
+                }
+            }
+
+            // Calculate the mean color value
+            int redMean = redSum / count;
+            int greenMean = greenSum / count;
+            int blueMean = blueSum / count;
+
+            // Set the new pixel value
+            outputImage.setPixelColor(x, y, QColor(redMean, greenMean, blueMean));
+        }
+    }
+
+    return outputImage;
+}
+
+// 均值滤波
+void MainWindow::on_pushButton_meanFilter_clicked() {
+    QMESSAGE_BOX_CROPPING
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        QImage images=meanFilter(image, 3);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+// Function to get the median value from a list of integers
+int MainWindow::median(QVector<int> &values) {
+    std::sort(values.begin(), values.end());
+    int middle = values.size() / 2;
+    return values[middle];
+}
+
+// 中值滤波
+QImage MainWindow::medianFilter(const QImage &inputImage, int kernelSize) {
+    QImage outputImage = inputImage;
+    int halfKernelSize = kernelSize / 2;
+
+    for (int y = 0; y < inputImage.height(); ++y) {
+        for (int x = 0; x < inputImage.width(); ++x) {
+            QVector<int> redValues;
+            QVector<int> greenValues;
+            QVector<int> blueValues;
+
+            // Iterate through the kernel
+            for (int ky = -halfKernelSize; ky <= halfKernelSize; ++ky) {
+                for (int kx = -halfKernelSize; kx <= halfKernelSize; ++kx) {
+                    int pixelX = clamp(x + kx, 0, inputImage.width() - 1);
+                    int pixelY = clamp(y + ky, 0, inputImage.height() - 1);
+
+                    QColor color = inputImage.pixelColor(pixelX, pixelY);
+                    redValues.push_back(color.red());
+                    greenValues.push_back(color.green());
+                    blueValues.push_back(color.blue());
+                }
+            }
+
+            // Calculate the median color value
+            int redMedian = median(redValues);
+            int greenMedian = median(greenValues);
+            int blueMedian = median(blueValues);
+
+            // Set the new pixel value
+            outputImage.setPixelColor(x, y, QColor(redMedian, greenMedian, blueMedian));
+        }
+    }
+
+    return outputImage;
+}
+
+// 中值滤波
+void MainWindow::on_pushButton_medianFilter_clicked() {
+    QMESSAGE_BOX_CROPPING
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+        QImage images=medianFilter(image, 3);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
 }
