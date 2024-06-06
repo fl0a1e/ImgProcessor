@@ -6,7 +6,9 @@
 #include <QTimer>
 #include <QImage>
 #include <QMessageBox>
+#include "imgprocessor.h"
 #include "cropper.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,20 +24,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QImage ImageCenter(QImage  qimage,QLabel *qLabel);//调整图片比例
-    QImage gray(QImage image);//灰度化
-    QImage gamma(QImage image); // gamma
-    QImage equalizeHistogram(QImage image); // 直方图均衡
-    QImage meanFilter(const QImage &image, int value); // 均值滤波
-    int median(QVector<int> &values);
-    QImage medianFilter(const QImage &inputImage, int value); // 中值滤波
-    QImage GaussianFilter(QImage image, double sigma); // 高斯模糊
-    QImage redChannel(const QImage &inputImage);
-    QImage greenChannel(const QImage &inputImage);
-    QImage blueChannel(const QImage &inputImage);
-    QImage AdjustContrast(QImage image, int value);//调整对比度
-    QImage AdjustSaturation(QImage image, int value);//调整饱和度
-    QImage EdgeDetection(QImage image);//边缘检测
+    QImage ImageCenter(QImage qimage, QLabel *qLabel);//调整图片比例
     QStringList srcDirPathList;//图片list
     int index =0; //图片index
 
@@ -77,7 +66,8 @@ private:
     QImage origin_img; //原图
     QImage cur_img;
     QMap<QString , int > slider_save; // 防止滑块反复触发保存当前图片
-    ImageCropperLabel* imgCropperLabel;
+    ImgProcessor* imgProcessor; // 图像处理核心逻辑
+    ImageCropperLabel* imgCropperLabel; // 裁剪模块
     bool cropper;
     QImage R_img;
     QImage G_img;

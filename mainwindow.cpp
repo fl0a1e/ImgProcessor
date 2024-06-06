@@ -40,12 +40,13 @@ MainWindow::MainWindow(QWidget *parent)
     slider_save["contrast"] = 0;
     slider_save["saturation"] = 0;
 
-
+    imgProcessor = new ImgProcessor();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete imgProcessor;
     delete imgCropperLabel;
 }
 
@@ -240,24 +241,6 @@ void MainWindow::on_pushButton_origin_clicked()
     }
 }
 
-
-// 灰度
-QImage MainWindow::gray(QImage image){
-    QImage newImage =image.convertToFormat(QImage::Format_ARGB32);
-    QColor oldColor;
-
-    for(int y = 0; y < newImage.height(); y++)
-    {
-        for(int x = 0; x < newImage.width(); x++)
-        {
-            oldColor = QColor(image.pixel(x,y));
-            int average = oldColor.red() * 0.11 + oldColor.green() * 0.59 + oldColor.blue() * 0.3;
-            newImage.setPixel(x, y, qRgb(average, average, average));
-        }
-    }
-    return newImage;
-}
-
 // 灰度
 void MainWindow::on_pushButton_gray_clicked()
 {
@@ -265,7 +248,7 @@ void MainWindow::on_pushButton_gray_clicked()
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
 
-        QImage images=gray(image);
+        QImage images=imgProcessor->gray(image);
 
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
@@ -300,7 +283,7 @@ void MainWindow::on_pushButton_turnright_clicked() {
         QTransform matrix;
         matrix.rotate(90.0);//顺时针旋转90度
         images= images.transformed(matrix,Qt::FastTransformation);
-        //QImage Image=ImageCenter(images,ui->label_show);
+
         ui->label_show->setPixmap(QPixmap::fromImage(images));
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
@@ -317,7 +300,7 @@ void MainWindow::on_pushButton_turnleft_clicked() {
         QTransform matrix;
         matrix.rotate(-90.0);//逆时针旋转90度
         images= images.transformed(matrix,Qt::FastTransformation);
-        //QImage Image=ImageCenter(images,ui->label_show);
+
         ui->label_show->setPixmap(QPixmap::fromImage(images));
         ui->label_show->setAlignment(Qt::AlignCenter);
     }
@@ -327,55 +310,14 @@ void MainWindow::on_pushButton_turnleft_clicked() {
 }
 
 //边缘检测
-QImage MainWindow::EdgeDetection(QImage image) {
-    QImage newImage =image.convertToFormat(QImage::Format_ARGB32);
-    QColor color0;
-    QColor color1;
-    QColor color2;
-    QColor color3;
-    int  r = 0;
-    int g = 0;
-    int b = 0;
-    int rgb = 0;
-    int r1 = 0;
-    int g1 = 0;
-    int b1 = 0;
-    int rgb1 = 0;
-    int a = 0;
-    for( int y = 0; y < image.height() - 1; y++)
-    {
-        for(int x = 0; x < image.width() - 1; x++)
-        {
-            color0 =   QColor ( image.pixel(x,y));
-            color1 =   QColor ( image.pixel(x + 1,y));
-            color2 =   QColor ( image.pixel(x,y + 1));
-            color3 =   QColor ( image.pixel(x + 1,y + 1));
-            r = abs(color0.red() - color3.red());
-            g = abs(color0.green() - color3.green());
-            b = abs(color0.blue() - color3.blue());
-            rgb = r + g + b;
-
-            r1 = abs(color1.red() - color2.red());
-            g1= abs(color1.green() - color2.green());
-            b1 = abs(color1.blue() - color2.blue());
-            rgb1 = r1 + g1 + b1;
-
-            a = rgb + rgb1;
-            a = a>255?255:a;
-
-            newImage.setPixel(x,y,qRgb(a,a,a));
-        }
-    }
-    return newImage;
-}
-
-//边缘检测
 void MainWindow::on_pushButton_edge_detection_clicked()
 {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
-        QImage newImage = EdgeDetection(image);
+
+        QImage newImage = imgProcessor->EdgeDetection(image);
+
         QImage Image=ImageCenter(newImage,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -386,32 +328,11 @@ void MainWindow::on_pushButton_edge_detection_clicked()
 }
 
 // 伽马变换
-QImage MainWindow::gamma(QImage image) {
-    double d=1.2;
-    QColor color;
-    int height = image.height();
-    int width = image.width();
-    for (int i=0;i<width;i++){
-        for(int j=0;j<height;j++){
-            color = QColor(image.pixel(i,j));
-            double r = color.red();
-            double g = color.green();
-            double b = color.blue();
-            int R = qBound(0,(int)qPow(r,d),255);
-            int G = qBound(0,(int)qPow(g,d),255);
-            int B = qBound(0,(int)qPow(b,d),255);
-            image.setPixel(i,j,qRgb(R,G,B));
-        }
-    }
-    return image;
-}
-
-// 伽马变换
 void MainWindow::on_pushButton_gamma_clicked() {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
-        QImage images=gamma(image);
+        QImage images=imgProcessor->gamma(image);
 
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
@@ -445,6 +366,7 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
             blue =  (blue  < 0x00) ? 0x00 : (blue  > 0xff) ? 0xff : blue ;
             data[i] = qRgba(red, green, blue, qAlpha(data[i]));
         }
+
         QImage Image=ImageCenter(image,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -453,56 +375,6 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
     else{
         QMESSAGE_BOX_NO_IMG
     }
-}
-
-//对比度
-QImage MainWindow::AdjustContrast(QImage image, int value)
-{
-    int pixels = image.width() * image.height();
-    unsigned int *data = (unsigned int *)image.bits();
-
-    int red, green, blue, nRed, nGreen, nBlue;
-
-    if (value > 0 && value < 256)
-    {
-        float param = 1 / (1 - value / 256.0) - 1;
-
-        for (int i = 0; i < pixels; ++i)
-        {
-            nRed = qRed(data[i]);
-            nGreen = qGreen(data[i]);
-            nBlue = qBlue(data[i]);
-
-            red = nRed + (nRed - 127) * param;
-            red = (red < 0x00) ? 0x00 : (red > 0xff) ? 0xff : red;
-            green = nGreen + (nGreen - 127) * param;
-            green = (green < 0x00) ? 0x00 : (green > 0xff) ? 0xff : green;
-            blue = nBlue + (nBlue - 127) * param;
-            blue = (blue < 0x00) ? 0x00 : (blue > 0xff) ? 0xff : blue;
-
-            data[i] = qRgba(red, green, blue, qAlpha(data[i]));
-        }
-    }
-    else
-    {
-        for (int i = 0; i < pixels; ++i)
-        {
-            nRed = qRed(data[i]);
-            nGreen = qGreen(data[i]);
-            nBlue = qBlue(data[i]);
-
-            red = nRed + (nRed - 127) * value / 100.0;
-            red = (red < 0x00) ? 0x00 : (red > 0xff) ? 0xff : red;
-            green = nGreen + (nGreen - 127) * value / 100.0;
-            green = (green < 0x00) ? 0x00 : (green > 0xff) ? 0xff : green;
-            blue = nBlue + (nBlue - 127) * value / 100.0;
-            blue = (blue < 0x00) ? 0x00 : (blue > 0xff) ? 0xff : blue;
-
-            data[i] = qRgba(red, green, blue, qAlpha(data[i]));
-        }
-    }
-
-    return image;
 }
 
 //对比度滑块
@@ -514,7 +386,8 @@ void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
             cur_img = ui->label_show->pixmap().toImage();
         }
         QImage image(cur_img);
-        QImage images=AdjustContrast(image,value);
+        QImage images=imgProcessor->AdjustContrast(image,value);
+
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -523,60 +396,6 @@ void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
     else{
         QMESSAGE_BOX_NO_IMG
     }
-}
-
-//饱和度
-QImage MainWindow::AdjustSaturation(QImage Img, int iSaturateValue)
-{
-    int red, green, blue, nRed, nGreen, nBlue;
-    int pixels = Img.width() * Img.height();
-    unsigned int *data = (unsigned int *)Img.bits();
-
-    float Increment = iSaturateValue/100.0;
-
-    float delta = 0;
-    float minVal, maxVal;
-    float L, S;
-    float alpha;
-
-    for (int i = 0; i < pixels; ++i)
-    {
-        nRed = qRed(data[i]);
-        nGreen = qGreen(data[i]);
-        nBlue = qBlue(data[i]);
-
-        minVal = std::min(std::min(nRed, nGreen), nBlue);
-        maxVal = std::max(std::max(nRed, nGreen), nBlue);
-        delta = (maxVal - minVal) / 255.0;
-        L = 0.5*(maxVal + minVal) / 255.0;
-        S = std::max(0.5*delta / L, 0.5*delta / (1 - L));
-
-        if (Increment > 0)
-        {
-            alpha = std::max(S, 1 - Increment);
-            alpha = 1.0 / alpha - 1;
-            red = nRed + (nRed - L*255.0)*alpha;
-            red = (red < 0x00) ? 0x00 : (red > 0xff) ? 0xff : red;
-            green = nGreen + (nGreen - L*255.0)*alpha;
-            green = (green < 0x00) ? 0x00 : (green > 0xff) ? 0xff : green;
-            blue = nBlue + (nBlue - L*255.0)*alpha;
-            blue = (blue < 0x00) ? 0x00 : (blue > 0xff) ? 0xff : blue;
-        }
-        else
-        {
-            alpha = Increment;
-            red = L*255.0 + (nRed - L * 255.0)*(1+alpha);
-            red = (red < 0x00) ? 0x00 : (red > 0xff) ? 0xff : red;
-            green = L*255.0 + (nGreen - L * 255.0)*(1+alpha);
-            green = (green < 0x00) ? 0x00 : (green > 0xff) ? 0xff : green;
-            blue = L*255.0 + (nBlue - L * 255.0)*(1+alpha);
-            blue = (blue < 0x00) ? 0x00 : (blue > 0xff) ? 0xff : blue;
-        }
-
-        data[i] = qRgba(red, green, blue, qAlpha(data[i]));
-    }
-
-    return Img;
 }
 
 
@@ -589,7 +408,8 @@ void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
             cur_img = ui->label_show->pixmap().toImage();
         }
         QImage image(cur_img);
-        QImage images=AdjustSaturation(image,value);
+        QImage images=imgProcessor->AdjustSaturation(image,value);
+
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -600,65 +420,14 @@ void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
     }
 }
 
-// 彩色图像直方图均衡
-QImage MainWindow::equalizeHistogram(QImage image) {
-    int height = image.height();
-    int width = image.width();
-    int numPixels = width * height;
 
-    // 分离 R, G, B 通道
-    QVector<int> histR(256, 0), histG(256, 0), histB(256, 0);
-    QVector<int> cdfR(256, 0), cdfG(256, 0), cdfB(256, 0);
-    QVector<int> equalizedR(256, 0), equalizedG(256, 0), equalizedB(256, 0);
-
-    // 计算直方图
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            QColor color = image.pixelColor(x, y);
-            histR[color.red()]++;
-            histG[color.green()]++;
-            histB[color.blue()]++;
-        }
-    }
-
-    // 计算累积分布函数 (CDF)
-    cdfR[0] = histR[0];
-    cdfG[0] = histG[0];
-    cdfB[0] = histB[0];
-
-    for (int i = 1; i < 256; ++i) {
-        cdfR[i] = cdfR[i - 1] + histR[i];
-        cdfG[i] = cdfG[i - 1] + histG[i];
-        cdfB[i] = cdfB[i - 1] + histB[i];
-    }
-
-    // 均衡化
-    for (int i = 0; i < 256; ++i) {
-        equalizedR[i] = qRound((cdfR[i] - cdfR[0]) * 255.0 / (numPixels - 1));
-        equalizedG[i] = qRound((cdfG[i] - cdfG[0]) * 255.0 / (numPixels - 1));
-        equalizedB[i] = qRound((cdfB[i] - cdfB[0]) * 255.0 / (numPixels - 1));
-    }
-
-    QImage newImage(image.size(), image.format());
-    // 应用均衡化直方图
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            QColor color = image.pixelColor(x, y);
-            int r = equalizedR[color.red()];
-            int g = equalizedG[color.green()];
-            int b = equalizedB[color.blue()];
-            newImage.setPixelColor(x, y, QColor(r, g, b));
-        }
-    }
-
-    return newImage;
-}
-
+// 直方均衡
 void MainWindow::on_pushButton_equalizeHist_clicked() {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
-        QImage newImage = equalizeHistogram(image);
+        QImage newImage = imgProcessor->equalizeHistogram(image);
+
         QImage Image=ImageCenter(newImage,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -666,59 +435,6 @@ void MainWindow::on_pushButton_equalizeHist_clicked() {
     else{
         QMESSAGE_BOX_NO_IMG
     }
-}
-
-// 高斯滤波
-QImage MainWindow::GaussianFilter(QImage image, double sigma) {
-
-    // 生成高斯核, 默认 5*5 大小
-    int kernelSize = 5;
-    QVector<QVector<double>> kernel(kernelSize, QVector<double>(kernelSize, 0));
-    double sum = 0.0;
-    int halfSize = kernelSize / 2;
-    double sigma2 = sigma * sigma;
-
-    for (int y = -halfSize; y <= halfSize; ++y) {
-        for (int x = -halfSize; x <= halfSize; ++x) {
-            double value = exp(-(x * x + y * y) / (2 * sigma2)) / (2 * M_PI * sigma2);
-            kernel[y + halfSize][x + halfSize] = value;
-            sum += value;
-        }
-    }
-
-    // 归一化核
-    for (int y = 0; y < kernelSize; ++y) {
-        for (int x = 0; x < kernelSize; ++x) {
-            kernel[y][x] /= sum;
-        }
-    }
-
-    // 应用
-    QImage newImage(image.size(), image.format());
-
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
-            double sumR = 0, sumG = 0, sumB = 0;
-
-            for (int ky = -halfSize; ky <= halfSize; ++ky) {
-                for (int kx = -halfSize; kx <= halfSize; ++kx) {
-                    int pixelX = qMin(qMax(x + kx, 0), image.width() - 1);
-                    int pixelY = qMin(qMax(y + ky, 0), image.height() - 1);
-
-                    QColor color = image.pixelColor(pixelX, pixelY);
-                    double kernelValue = kernel[ky + halfSize][kx + halfSize];
-
-                    sumR += color.red() * kernelValue;
-                    sumG += color.green() * kernelValue;
-                    sumB += color.blue() * kernelValue;
-                }
-            }
-
-            newImage.setPixelColor(x, y, QColor(static_cast<int>(sumR), static_cast<int>(sumG), static_cast<int>(sumB)));
-        }
-    }
-
-    return newImage;
 }
 
 // 高斯模糊滑块
@@ -731,7 +447,8 @@ void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
             cur_img = ui->label_show->pixmap().toImage();
         }
         QImage image(cur_img);
-        QImage images=GaussianFilter(image, static_cast<double>(value * 20.0 / 100.0));
+        QImage images=imgProcessor->GaussianFilter(image, static_cast<double>(value * 20.0 / 100.0));
+
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
         ui->label_show->setAlignment(Qt::AlignCenter);
@@ -797,51 +514,14 @@ void MainWindow::cropImgShow() {
     ui->label_show->setAlignment(Qt::AlignCenter);
 }
 
-// 均值滤波
-QImage MainWindow::meanFilter(const QImage &inputImage, int kernelSize) {
-    QImage outputImage = inputImage;
-    int halfKernelSize = kernelSize / 2;
 
-    for (int y = 0; y < inputImage.height(); ++y) {
-        for (int x = 0; x < inputImage.width(); ++x) {
-            int redSum = 0;
-            int greenSum = 0;
-            int blueSum = 0;
-            int count = 0;
-
-            // Iterate through the kernel
-            for (int ky = -halfKernelSize; ky <= halfKernelSize; ++ky) {
-                for (int kx = -halfKernelSize; kx <= halfKernelSize; ++kx) {
-                    int pixelX = clamp(x + kx, 0, inputImage.width() - 1);
-                    int pixelY = clamp(y + ky, 0, inputImage.height() - 1);
-
-                    QColor color = inputImage.pixelColor(pixelX, pixelY);
-                    redSum += color.red();
-                    greenSum += color.green();
-                    blueSum += color.blue();
-                    ++count;
-                }
-            }
-
-            // Calculate the mean color value
-            int redMean = redSum / count;
-            int greenMean = greenSum / count;
-            int blueMean = blueSum / count;
-
-            // Set the new pixel value
-            outputImage.setPixelColor(x, y, QColor(redMean, greenMean, blueMean));
-        }
-    }
-
-    return outputImage;
-}
 
 // 均值滤波
 void MainWindow::on_pushButton_meanFilter_clicked() {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
-        QImage images=meanFilter(image, 3);
+        QImage images=imgProcessor->meanFilter(image, 3);
 
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
@@ -852,56 +532,12 @@ void MainWindow::on_pushButton_meanFilter_clicked() {
     }
 }
 
-// Function to get the median value from a list of integers
-int MainWindow::median(QVector<int> &values) {
-    std::sort(values.begin(), values.end());
-    int middle = values.size() / 2;
-    return values[middle];
-}
-
-// 中值滤波
-QImage MainWindow::medianFilter(const QImage &inputImage, int kernelSize) {
-    QImage outputImage = inputImage;
-    int halfKernelSize = kernelSize / 2;
-
-    for (int y = 0; y < inputImage.height(); ++y) {
-        for (int x = 0; x < inputImage.width(); ++x) {
-            QVector<int> redValues;
-            QVector<int> greenValues;
-            QVector<int> blueValues;
-
-            // Iterate through the kernel
-            for (int ky = -halfKernelSize; ky <= halfKernelSize; ++ky) {
-                for (int kx = -halfKernelSize; kx <= halfKernelSize; ++kx) {
-                    int pixelX = clamp(x + kx, 0, inputImage.width() - 1);
-                    int pixelY = clamp(y + ky, 0, inputImage.height() - 1);
-
-                    QColor color = inputImage.pixelColor(pixelX, pixelY);
-                    redValues.push_back(color.red());
-                    greenValues.push_back(color.green());
-                    blueValues.push_back(color.blue());
-                }
-            }
-
-            // Calculate the median color value
-            int redMedian = median(redValues);
-            int greenMedian = median(greenValues);
-            int blueMedian = median(blueValues);
-
-            // Set the new pixel value
-            outputImage.setPixelColor(x, y, QColor(redMedian, greenMedian, blueMedian));
-        }
-    }
-
-    return outputImage;
-}
-
 // 中值滤波
 void MainWindow::on_pushButton_medianFilter_clicked() {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
         QImage image(ui->label_show->pixmap().toImage());
-        QImage images=medianFilter(image, 3);
+        QImage images=imgProcessor->medianFilter(image, 3);
 
         QImage Image=ImageCenter(images,ui->label_show);
         ui->label_show->setPixmap(QPixmap::fromImage(Image));
@@ -913,20 +549,6 @@ void MainWindow::on_pushButton_medianFilter_clicked() {
 }
 
 // 红通道
-QImage MainWindow::redChannel(const QImage &inputImage) {
-    QImage redChannelImage(inputImage.size(), QImage::Format_RGB32);
-
-    for (int y = 0; y < inputImage.height(); ++y) {
-        for (int x = 0; x < inputImage.width(); ++x) {
-            QColor color = inputImage.pixelColor(x, y);
-            int r = color.red();
-            redChannelImage.setPixelColor(x, y, QColor(r, 0, 0));
-        }
-    }
-
-    return redChannelImage;
-}
-
 void MainWindow::on_checkBox_R_clicked() {
     QMESSAGE_BOX_CROPPING
     if(origin_path!=nullptr){
@@ -945,7 +567,7 @@ void MainWindow::on_checkBox_R_clicked() {
             ui->label_show->setPixmap(QPixmap::fromImage(Image));
             ui->label_show->setAlignment(Qt::AlignCenter);
         } else if(!ui->checkBox_R->isChecked()) {
-            R_img = redChannel(image);
+            R_img = imgProcessor->redChannel(image);
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
                     QColor color = image.pixelColor(x, y);
@@ -965,20 +587,6 @@ void MainWindow::on_checkBox_R_clicked() {
 }
 
 // 绿通道
-QImage MainWindow::greenChannel(const QImage &inputImage) {
-    QImage greenChannelImage(inputImage.size(), QImage::Format_RGB32);
-
-    for (int y = 0; y < inputImage.height(); ++y) {
-        for (int x = 0; x < inputImage.width(); ++x) {
-            QColor color = inputImage.pixelColor(x, y);
-            int g = color.green();
-            greenChannelImage.setPixelColor(x, y, QColor(0, g, 0));
-        }
-    }
-
-    return greenChannelImage;
-}
-
 void MainWindow::on_checkBox_G_clicked() {
     QMESSAGE_BOX_CROPPING
         if(origin_path!=nullptr){
@@ -997,7 +605,7 @@ void MainWindow::on_checkBox_G_clicked() {
             ui->label_show->setPixmap(QPixmap::fromImage(Image));
             ui->label_show->setAlignment(Qt::AlignCenter);
         } else if(!ui->checkBox_G->isChecked()) {
-            G_img = greenChannel(image);
+            G_img = imgProcessor->greenChannel(image);
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
                     QColor color = image.pixelColor(x, y);
@@ -1017,20 +625,6 @@ void MainWindow::on_checkBox_G_clicked() {
 }
 
 // blue通道
-QImage MainWindow::blueChannel(const QImage &inputImage) {
-    QImage blueChannelImage(inputImage.size(), QImage::Format_RGB32);
-
-    for (int y = 0; y < inputImage.height(); ++y) {
-        for (int x = 0; x < inputImage.width(); ++x) {
-            QColor color = inputImage.pixelColor(x, y);
-            int b = color.blue();
-            blueChannelImage.setPixelColor(x, y, QColor(0, 0, b));
-        }
-    }
-
-    return blueChannelImage;
-}
-
 void MainWindow::on_checkBox_B_clicked() {
     QMESSAGE_BOX_CROPPING
         if(origin_path!=nullptr){
@@ -1049,7 +643,7 @@ void MainWindow::on_checkBox_B_clicked() {
             ui->label_show->setPixmap(QPixmap::fromImage(Image));
             ui->label_show->setAlignment(Qt::AlignCenter);
         } else if(!ui->checkBox_B->isChecked()) {
-            B_img = blueChannel(image);
+            B_img = imgProcessor->blueChannel(image);
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
                     QColor color = image.pixelColor(x, y);

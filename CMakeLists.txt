@@ -9,6 +9,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 配置本地QT路径
+# set(CMAKE_PREFIX_PATH "C:/Applications/Qt/6.6.3/mingw_64")
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
@@ -29,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         images.qrc
         cropper.cpp
         cropper.h
+        imgprocessor.h imgprocessor.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET ImgProcessor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

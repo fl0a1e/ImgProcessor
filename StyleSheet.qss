@@ -1,6 +1,58 @@
 QMainWindow {
 	background-color:#1e1d23;
 }
+/***1. 设置整体样式***/
+QToolBox {
+    background-color: #1e1d23;
+}
+/*****2. 设置标题样式****/
+QToolBox::tab {
+    border-style: inset;
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-left-color: transparent;
+	border-bottom-color: #04b97f;
+	border-width: 1px;
+	color: #a9b7c6;
+	padding: 2px;
+	background-color: #1e1d23;
+}
+/*****3. 设置选中标题样式*******/
+QToolBox::tab:selected {
+    background-color: #d0d0d0;
+}
+/***4. 设置标题悬停样式****/
+QToolBox::tab:hover {
+    border-style: solid;
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-left-color: transparent;
+	border-bottom-color: #37efba;
+	border-bottom-width: 1px;
+	border-style: solid;
+	color: #FFFFFF;
+	padding-bottom: 2px;
+	background-color: #1e1d23;
+}
+QToolBox::tab:pressed {
+	border-style: solid;
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-left-color: transparent;
+	border-bottom-color: #37efba;
+	border-bottom-width: 2px;
+	border-style: solid;
+	color: #37efba;
+	padding-bottom: 1px;
+	background-color: #1e1d23;
+}
+/****5. 设置内容区域样式*****/
+QToolBox::content {
+    background-color: #1e1d23;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 10px;
+}
 QDialog {
 	background-color:#1e1d23;
 }
