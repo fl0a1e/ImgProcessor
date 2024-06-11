@@ -181,13 +181,6 @@ QImage ImgProcessor::meanFilter(const QImage &inputImage, int kernelSize) const 
     return newImage;
 }
 
-// Function to get the median value from a list of integers
-int ImgProcessor::median(QVector<int> &values) const {
-    std::sort(values.begin(), values.end());
-    int middle = values.size() / 2;
-    return values[middle];
-}
-
 // 中值滤波
 QImage ImgProcessor::medianFilter(const QImage &inputImage, int kernelSize) const {
     QImage outputImage = inputImage;
@@ -211,6 +204,13 @@ QImage ImgProcessor::medianFilter(const QImage &inputImage, int kernelSize) cons
                     blueValues.push_back(color.blue());
                 }
             }
+
+            // Function to get the median value from a list of integers
+            auto median = [](QVector<int> &values)->int{
+                std::sort(values.begin(), values.end());
+                int middle = values.size() / 2;
+                return values[middle];
+            };
 
             // Calculate the median color value
             int redMedian = median(redValues);

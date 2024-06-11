@@ -33,7 +33,6 @@ public:
     QImage FreezeFilter(const QImage &image) const; // 冰冻
 
 private:
-    int median(QVector<int> &values) const; // 计算中值
 
 };
 

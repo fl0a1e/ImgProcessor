@@ -525,6 +525,11 @@
     <string>冰冻</string>
    </property>
   </action>
+  <action name="action_starry">
+   <property name="text">
+    <string>星空</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
