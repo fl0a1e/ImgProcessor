@@ -425,3 +425,147 @@ QImage ImgProcessor::blueChannel(const QImage &inputImage) const {
 
     return blueChannelImage;
 }
+
+// 暖色
+QImage ImgProcessor::warm(const QImage &inputImage) const {
+    int index = 50;
+    QImage imgCopy;
+    if (inputImage.format() != QImage::Format_RGB888) {
+        imgCopy = QImage(inputImage).convertToFormat(QImage::Format_RGB888);
+    } else {
+        imgCopy = QImage(inputImage);
+    }
+    uint8_t *rgb = imgCopy.bits();
+    if (nullptr == rgb) {
+        return QImage();
+    }
+
+    int size = inputImage.width() * inputImage.height();
+
+    for (int i = 0; i < size ; i++) {
+        int r = rgb[i * 3] + index;
+        int g = rgb[i * 3 + 1] + index;
+        int b = rgb[i * 3 + 2] ;
+
+        rgb[i * 3] = r > 255 ? 255 : r;
+        rgb[i * 3 + 1] = g > 255 ? 255 : g;
+        rgb[i * 3 + 2] = b > 255 ? 255 : b;
+    }
+
+    return imgCopy;
+}
+
+// 冷色
+QImage ImgProcessor::cool(const QImage &inputImage) const {
+    int index = 50;
+    QImage imgCopy;
+    if (inputImage.format() != QImage::Format_RGB888) {
+        imgCopy = QImage(inputImage).convertToFormat(QImage::Format_RGB888);
+    } else {
+        imgCopy = QImage(inputImage);
+    }
+    uint8_t *rgb = imgCopy.bits();
+    if (nullptr == rgb) {
+        return QImage();
+    }
+    int size = inputImage.width() * inputImage.height();
+
+    for (int i = 0; i < size ; i++) {
+        int r = rgb[i * 3] ;
+        int g = rgb[i * 3 + 1] ;
+        int b = rgb[i * 3 + 2] + index;
+
+        rgb[i * 3] = r > 255 ? 255 : r;
+        rgb[i * 3 + 1] = g > 255 ? 255 : g;
+        rgb[i * 3 + 2] = b > 255 ? 255 : b;
+    }
+
+    return imgCopy;
+}
+
+// 老照片
+QImage ImgProcessor::old(const QImage &inputImage) const {
+    QImage imgCopy;
+    if (inputImage.format() != QImage::Format_RGB888) {
+        imgCopy = QImage(inputImage).convertToFormat(QImage::Format_RGB888);
+    } else {
+        imgCopy = QImage(inputImage);
+    }
+    uint8_t *rgb = imgCopy.bits();
+    if (nullptr == rgb) {
+        return QImage();
+    } int size = inputImage.width() * inputImage.height();
+    for (int i = 0; i < size ; i++) {
+        float r = 0.393 * rgb[i * 3] + 0.769 * rgb[i * 3 + 1] + 0.189 * rgb[i * 3 + 2];
+        float g = 0.349 * rgb[i * 3] + 0.686 * rgb[i * 3 + 1] + 0.168 * rgb[i * 3 + 2];
+        float b = 0.272 * rgb[i * 3] + 0.534 * rgb[i * 3 + 1] + 0.131 * rgb[i * 3 + 2];
+        r = qBound(0, static_cast<int>(r), 255);
+        g = qBound(0, static_cast<int>(g), 255);
+        b = qBound(0, static_cast<int>(b), 255);
+        rgb[i * 3] = r;
+        rgb[i * 3 + 1] = g ;
+        rgb[i * 3 + 2] = b  ;
+    }
+    return imgCopy;
+}
+
+// 反色
+QImage ImgProcessor::InverseColor(const QImage &inputImage) const {
+    QImage imgCopy;
+    if (inputImage.format() != QImage::Format_RGB888) {
+        imgCopy = QImage(inputImage).convertToFormat(QImage::Format_RGB888);
+    } else {
+        imgCopy = QImage(inputImage);
+    }
+    uint8_t *rgb = imgCopy.bits();
+    if (nullptr == rgb) {
+        return QImage();
+    } int size = inputImage.width() * inputImage.height();
+    for (int i = 0; i < size ; i++) {
+        rgb[i * 3] = 255 - rgb[i * 3] ;
+        rgb[i * 3 + 1] = 255 - rgb[i * 3 + 1]  ;
+        rgb[i * 3 + 2] = 255 - rgb[i * 3 + 2]  ;
+    }
+    return imgCopy;
+}
+
+// 锐化
+QImage ImgProcessor::Sharpen(const QImage &inputImage) const {
+    QImage newImage = inputImage;
+
+    int kernel [3][3]= {{0,-1,0},
+                        {-1,5,-1},
+                        {0,-1,0}};
+    int kernelSize = 3;
+    int sumKernel = 1;
+    int r,g,b;
+    QColor color;
+
+    for(int x=kernelSize / 2; x < newImage.width()-(kernelSize/2); x++){
+        for(int y=kernelSize / 2; y < newImage.height()-(kernelSize/2); y++){
+
+            r = 0;
+            g = 0;
+            b = 0;
+
+            for(int i = -kernelSize/2; i<= kernelSize/2; i++){
+                for(int j = -kernelSize/2; j<= kernelSize/2; j++){
+                    color = QColor(inputImage.pixel(x+i, y+j));
+                    r += color.red()*kernel[kernelSize/2+i][kernelSize/2+j];
+                    g += color.green()*kernel[kernelSize/2+i][kernelSize/2+j];
+                    b += color.blue()*kernel[kernelSize/2+i][kernelSize/2+j];
+                }
+            }
+
+            r = qBound(0, r/sumKernel, 255);
+            g = qBound(0, g/sumKernel, 255);
+            b = qBound(0, b/sumKernel, 255);
+
+            newImage.setPixel(x,y, qRgb(r,g,b));
+
+        }
+    }
+    return newImage;
+}
+
+

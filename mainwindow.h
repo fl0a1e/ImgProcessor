@@ -42,6 +42,7 @@ private slots:
     void on_pushButton_turnright_clicked();
     void on_pushButton_mirrored_clicked();
     void on_pushButton_edge_detection_clicked();
+    void on_pushButton_sharp_clicked();
     void on_horizontalSlider_Contrast_valueChanged(int value);
     void on_horizontalSlider_light_valueChanged(int value);
     void on_horizontalSlider_Saturation_valueChanged(int value);
@@ -59,6 +60,10 @@ private slots:
     void on_action_ElegantDark_triggered();
     void on_action_Dark_triggered();
     void on_action_Ubuntu_triggered();
+    void on_action_old_triggered();
+    void on_action_T_triggered();
+    void on_action_cold_triggered();
+    void on_action_warm_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -69,6 +74,8 @@ private:
     ImgProcessor* imgProcessor; // 图像处理核心逻辑
     ImageCropperLabel* imgCropperLabel; // 裁剪模块
     bool cropper;
+
+    // 分别存储三个通道
     QImage R_img;
     QImage G_img;
     QImage B_img;

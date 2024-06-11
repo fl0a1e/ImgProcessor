@@ -79,6 +79,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton_sharp">
+         <property name="text">
+          <string>图像锐化</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>高斯模糊 - 方差调整</string>
@@ -106,13 +113,6 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_mirrored">
-         <property name="text">
-          <string>镜像翻转</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="pushButton_turnright">
          <property name="text">
           <string>顺时针旋转</string>
@@ -123,6 +123,13 @@
         <widget class="QPushButton" name="pushButton_turnleft">
          <property name="text">
           <string>逆时针旋转</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_mirrored">
+         <property name="text">
+          <string>镜像翻转</string>
          </property>
         </widget>
        </item>
@@ -396,19 +403,15 @@
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
-     <string>设置</string>
+     <string>更多滤镜</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menu_3">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="title">
-     <string>关于</string>
-    </property>
+    <addaction name="action_warm"/>
+    <addaction name="action_cold"/>
+    <addaction name="action_T"/>
+    <addaction name="action_old"/>
    </widget>
    <widget class="QMenu" name="menudemo">
     <property name="title">
@@ -428,9 +431,8 @@
     <addaction name="action_Ubuntu"/>
    </widget>
    <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
    <addaction name="menudemo"/>
+   <addaction name="menu_2"/>
    <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -477,6 +479,26 @@
   <action name="action_SP">
    <property name="text">
     <string>Salt-and-pepper</string>
+   </property>
+  </action>
+  <action name="action_warm">
+   <property name="text">
+    <string>暖色</string>
+   </property>
+  </action>
+  <action name="action_cold">
+   <property name="text">
+    <string>冷色</string>
+   </property>
+  </action>
+  <action name="action_T">
+   <property name="text">
+    <string>反色</string>
+   </property>
+  </action>
+  <action name="action_old">
+   <property name="text">
+    <string>老照片</string>
    </property>
   </action>
  </widget>

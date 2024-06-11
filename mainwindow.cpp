@@ -459,6 +459,24 @@ void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
     }
 }
 
+// 锐化
+void MainWindow::on_pushButton_sharp_clicked()
+{
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->Sharpen(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
 // 裁剪模块
 void MainWindow::on_pushButton_cropper_clicked() {
     if(origin_path!=nullptr){
@@ -710,3 +728,68 @@ void MainWindow::on_action_Ubuntu_triggered() {
         QMessageBox::information(this,"tip","cannot find qss file");
     }
 }
+
+void MainWindow::on_action_warm_triggered() {
+    QMESSAGE_BOX_CROPPING
+    if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->warm(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+void MainWindow::on_action_cold_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->cool(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+void MainWindow::on_action_T_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->InverseColor(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+void MainWindow::on_action_old_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->old(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
