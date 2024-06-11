@@ -793,3 +793,67 @@ void MainWindow::on_action_old_triggered() {
     }
 }
 
+void MainWindow::on_action_PencilSketchFilter_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->PencilSketchFilter(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+void MainWindow::on_action_MosaicFilter_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->MosaicFilter(image, 10);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+
+void MainWindow::on_action_MeltFilter_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->MeltFilter(image, 10);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+void MainWindow::on_action_FreezeFilter_triggered() {
+    QMESSAGE_BOX_CROPPING
+        if(origin_path!=nullptr){
+        QImage image(ui->label_show->pixmap().toImage());
+
+        QImage images=imgProcessor->FreezeFilter(image);
+
+        QImage Image=ImageCenter(images,ui->label_show);
+        ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        ui->label_show->setAlignment(Qt::AlignCenter);
+    }
+    else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}

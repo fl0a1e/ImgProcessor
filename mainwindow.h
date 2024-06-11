@@ -64,6 +64,10 @@ private slots:
     void on_action_T_triggered();
     void on_action_cold_triggered();
     void on_action_warm_triggered();
+    void on_action_PencilSketchFilter_triggered();
+    void on_action_MosaicFilter_triggered();
+    void on_action_MeltFilter_triggered();
+    void on_action_FreezeFilter_triggered();
 
 private:
     Ui::MainWindow *ui;

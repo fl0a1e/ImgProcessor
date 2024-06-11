@@ -1,6 +1,7 @@
 #include "imgprocessor.h"
 #include <QImage>
 #include <QColor>
+#include <QRandomGenerator>
 #include <qmath.h>
 
 ImgProcessor::ImgProcessor() {}
@@ -568,4 +569,139 @@ QImage ImgProcessor::Sharpen(const QImage &inputImage) const {
     return newImage;
 }
 
+// 铅笔画滤镜
+QImage ImgProcessor::PencilSketchFilter(const QImage &inputImage) const {
+    // Convert image to grayscale
+    QImage grayImage = inputImage.convertToFormat(QImage::Format_Grayscale8);
 
+    // Edge detection using a simple Sobel filter
+    QImage edgeImage(grayImage.size(), QImage::Format_Grayscale8);
+    for (int y = 1; y < grayImage.height() - 1; ++y) {
+        for (int x = 1; x < grayImage.width() - 1; ++x) {
+            int gx = -grayImage.pixelColor(x-1, y-1).red() - 2*grayImage.pixelColor(x, y-1).red() - grayImage.pixelColor(x+1, y-1).red()
+                     + grayImage.pixelColor(x-1, y+1).red() + 2*grayImage.pixelColor(x, y+1).red() + grayImage.pixelColor(x+1, y+1).red();
+
+            int gy = -grayImage.pixelColor(x-1, y-1).red() - 2*grayImage.pixelColor(x-1, y).red() - grayImage.pixelColor(x-1, y+1).red()
+                     + grayImage.pixelColor(x+1, y-1).red() + 2*grayImage.pixelColor(x+1, y).red() + grayImage.pixelColor(x+1, y+1).red();
+
+            int g = qBound(0, int(sqrt(gx * gx + gy * gy)), 255);
+            edgeImage.setPixelColor(x, y, QColor(g, g, g));
+        }
+    }
+
+    // Invert the edge image to get the sketch effect
+    QImage sketchImage(edgeImage.size(), QImage::Format_Grayscale8);
+    for (int y = 0; y < edgeImage.height(); ++y) {
+        for (int x = 0; x < edgeImage.width(); ++x) {
+            int pixel = edgeImage.pixelColor(x, y).red();
+            sketchImage.setPixelColor(x, y, QColor(255 - pixel, 255 - pixel, 255 - pixel));
+        }
+    }
+
+    return sketchImage;
+}
+
+// 马赛克滤镜
+QImage ImgProcessor::MosaicFilter(const QImage &image, int blockSize = 10) const {
+    QImage mosaicImage = image;
+    int width = image.width();
+    int height = image.height();
+
+    for (int y = 0; y < height; y += blockSize) {
+        for (int x = 0; x < width; x += blockSize) {
+            int sumR = 0, sumG = 0, sumB = 0, pixelCount = 0;
+
+            // Calculate the average color of the block
+            for (int j = 0; j < blockSize && (y + j) < height; ++j) {
+                for (int i = 0; i < blockSize && (x + i) < width; ++i) {
+                    QColor color = image.pixelColor(x + i, y + j);
+                    sumR += color.red();
+                    sumG += color.green();
+                    sumB += color.blue();
+                    ++pixelCount;
+                }
+            }
+
+            int avgR = sumR / pixelCount;
+            int avgG = sumG / pixelCount;
+            int avgB = sumB / pixelCount;
+
+            // Set the block to the average color
+            for (int j = 0; j < blockSize && (y + j) < height; ++j) {
+                for (int i = 0; i < blockSize && (x + i) < width; ++i) {
+                    mosaicImage.setPixelColor(x + i, y + j, QColor(avgR, avgG, avgB));
+                }
+            }
+        }
+    }
+
+    return mosaicImage;
+}
+
+
+// 融化
+QImage ImgProcessor::MeltFilter(const QImage &image, int meltIntensity = 10) const {
+    QImage meltImage = image.copy();
+    int width = image.width();
+    int height = image.height();
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            int dx = QRandomGenerator::global()->bounded(-meltIntensity, meltIntensity + 1);
+            int dy = QRandomGenerator::global()->bounded(-meltIntensity, meltIntensity + 1);
+            int newX = qBound(0, x + dx, width - 1);
+            int newY = qBound(0, y + dy, height - 1);
+
+            meltImage.setPixelColor(x, y, image.pixelColor(newX, newY));
+        }
+    }
+
+    return meltImage;
+}
+
+// 冰冻
+QImage ImgProcessor::FreezeFilter(const QImage &image) const {
+    QImage freezeImage = image.copy();
+    int width = image.width();
+    int height = image.height();
+
+    // Increase contrast and adjust brightness
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            QColor color = image.pixelColor(x, y);
+            int r = color.red();
+            int g = color.green();
+            int b = color.blue();
+
+            // Increase contrast
+            r = qBound(0, int((r - 128) * 1.5 + 128), 255);
+            g = qBound(0, int((g - 128) * 1.5 + 128), 255);
+            b = qBound(0, int((b - 128) * 1.5 + 128), 255);
+
+            // Adjust brightness
+            r = qBound(0, r + 20, 255);
+            g = qBound(0, g + 20, 255);
+            b = qBound(0, b + 20, 255);
+
+            b = qBound(0, b + 40, 255);
+
+            freezeImage.setPixelColor(x, y, QColor(r, g, b));
+        }
+    }
+
+    // Add random noise to simulate ice crystals
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (QRandomGenerator::global()->bounded(100) < 10) { // 10% chance of noise
+                int noise = QRandomGenerator::global()->bounded(-50, 51);
+                QColor color = freezeImage.pixelColor(x, y);
+                int r = qBound(0, color.red() + noise, 255);
+                int g = qBound(0, color.green() + noise, 255);
+                int b = qBound(0, color.blue() + noise, 255);
+                freezeImage.setPixelColor(x, y, QColor(r, g, b));
+            }
+        }
+    }
+
+    return freezeImage;
+}

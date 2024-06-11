@@ -27,6 +27,10 @@ public:
     QImage cool(const QImage &inputImage) const; // 冷色
     QImage InverseColor(const QImage &inputImage) const; // 反色
     QImage old(const QImage &inputImage) const; // 老照片
+    QImage PencilSketchFilter(const QImage &inputImage) const; // 铅笔画
+    QImage MosaicFilter(const QImage &image, int blockSize) const; // 马赛克
+    QImage MeltFilter(const QImage &image, int meltIntensity) const; // 融化
+    QImage FreezeFilter(const QImage &image) const; // 冰冻
 
 private:
     int median(QVector<int> &values) const; // 计算中值

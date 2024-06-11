@@ -412,6 +412,10 @@
     <addaction name="action_cold"/>
     <addaction name="action_T"/>
     <addaction name="action_old"/>
+    <addaction name="action_PencilSketchFilter"/>
+    <addaction name="action_MosaicFilter"/>
+    <addaction name="action_MeltFilter"/>
+    <addaction name="action_FreezeFilter"/>
    </widget>
    <widget class="QMenu" name="menudemo">
     <property name="title">
@@ -499,6 +503,26 @@
   <action name="action_old">
    <property name="text">
     <string>老照片</string>
+   </property>
+  </action>
+  <action name="action_PencilSketchFilter">
+   <property name="text">
+    <string>铅笔画</string>
+   </property>
+  </action>
+  <action name="action_MosaicFilter">
+   <property name="text">
+    <string>马赛克</string>
+   </property>
+  </action>
+  <action name="action_MeltFilter">
+   <property name="text">
+    <string>熔铸</string>
+   </property>
+  </action>
+  <action name="action_FreezeFilter">
+   <property name="text">
+    <string>冰冻</string>
    </property>
   </action>
  </widget>
