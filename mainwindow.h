@@ -69,6 +69,12 @@ private slots:
     void on_action_MeltFilter_triggered();
     void on_action_FreezeFilter_triggered();
 
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString origin_path;//原图路径
@@ -78,6 +84,7 @@ private:
     ImgProcessor* imgProcessor; // 图像处理核心逻辑
     ImageCropperLabel* imgCropperLabel; // 裁剪模块
     bool cropper;
+    QPixmap crop_img; //裁剪的图片
 
     // 分别存储三个通道
     QImage R_img;

@@ -17,6 +17,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
 set(TS_FILES ImgProcessor_zh_CN.ts)
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -33,6 +35,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         cropper.cpp
         cropper.h
         imgprocessor.h imgprocessor.cpp
+        photolabel.cpp
+        photolabel.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET ImgProcessor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

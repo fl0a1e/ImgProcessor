@@ -73,7 +73,7 @@ QImage MainWindow::ImageCenter(QImage qimage,QLabel *qLabel)
 
 void MainWindow::on_action_open_triggered() {
     QMESSAGE_BOX_CROPPING
-    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp)"));
+        QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp *.jpeg)"));
     if(srcDirPathListS.size()>0)
     {
         ui->tabWidget->setCurrentIndex(0);
@@ -83,10 +83,11 @@ void MainWindow::on_action_open_triggered() {
         srcDirPathListS.clear();
         index =0;
         QString srcDirPath = srcDirPathList.at(index);
-        QImage image(srcDirPath);
-        QImage Image=ImageCenter(image,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setPhoto(srcDirPath);
+        //QImage image(srcDirPath);
+        //QImage Image=ImageCenter(image,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
         origin_path=srcDirPath;
 
         ui->statusbar->showMessage(srcDirPath);
@@ -95,13 +96,13 @@ void MainWindow::on_action_open_triggered() {
 
 void MainWindow::on_action_save_triggered() {
     QMESSAGE_BOX_CROPPING
-    if(!ui->label_show->pixmap().isNull()){
-        QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF")); //选择路径
+        if(!ui->label_show->getImage().isNull()){
+        QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF;; *.jpeg")); //选择路径
         if (filename.isEmpty()) {
             return;
         }
         else{
-            if (!(ui->label_show->pixmap().toImage().save(filename))) //保存图像
+            if (!(ui->label_show->getImage().save(filename))) //保存图像
             {
                 QMessageBox::information(this,tr("图片保存成功！"),tr("图片保存失败！"));
                 return;
@@ -116,11 +117,12 @@ void MainWindow::on_action_save_triggered() {
 // 快速开始
 void MainWindow::on_action_flower_triggered() {
     QMESSAGE_BOX_CROPPING
-    QString srcDirPath = ":/sys/images/flower.jpg";
-    QImage image(srcDirPath);
-    QImage Image=ImageCenter(image,ui->label_show);
-    ui->label_show->setPixmap(QPixmap::fromImage(Image));
-    ui->label_show->setAlignment(Qt::AlignCenter);
+        QString srcDirPath = ":/sys/images/flower.jpg";
+    //QImage image(srcDirPath);
+    //QImage Image=ImageCenter(image,ui->label_show);
+    //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    //ui->label_show->setAlignment(Qt::AlignCenter);
+    ui->label_show->setPhoto(srcDirPath);
     origin_path=srcDirPath;
 
     ui->statusbar->showMessage(srcDirPath);
@@ -129,10 +131,11 @@ void MainWindow::on_action_flower_triggered() {
 void MainWindow::on_action_lena_triggered() {
     QMESSAGE_BOX_CROPPING
     QString srcDirPath = ":/sys/images/lena.png";
-    QImage image(srcDirPath);
-    QImage Image=ImageCenter(image,ui->label_show);
-    ui->label_show->setPixmap(QPixmap::fromImage(Image));
-    ui->label_show->setAlignment(Qt::AlignCenter);
+    ui->label_show->setPhoto(srcDirPath);
+    //QImage image(srcDirPath);
+    //QImage Image=ImageCenter(image,ui->label_show);
+    //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    //ui->label_show->setAlignment(Qt::AlignCenter);
     origin_path=srcDirPath;
 
     ui->statusbar->showMessage(srcDirPath);
@@ -140,11 +143,12 @@ void MainWindow::on_action_lena_triggered() {
 
 void MainWindow::on_action_cameraman_triggered() {
     QMESSAGE_BOX_CROPPING
-    QString srcDirPath = ":/sys/images/cameraman.jpg";
-    QImage image(srcDirPath);
-    QImage Image=ImageCenter(image,ui->label_show);
-    ui->label_show->setPixmap(QPixmap::fromImage(Image));
-    ui->label_show->setAlignment(Qt::AlignCenter);
+        QString srcDirPath = ":/sys/images/cameraman.jpg";
+    ui->label_show->setPhoto(srcDirPath);
+    //QImage image(srcDirPath);
+    //QImage Image=ImageCenter(image,ui->label_show);
+    //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    //ui->label_show->setAlignment(Qt::AlignCenter);
     origin_path=srcDirPath;
 
     ui->statusbar->showMessage(srcDirPath);
@@ -153,10 +157,11 @@ void MainWindow::on_action_cameraman_triggered() {
 void MainWindow::on_action_SP_triggered() {
     QMESSAGE_BOX_CROPPING
         QString srcDirPath = ":/sys/images/Salt-and-pepper.png";
-    QImage image(srcDirPath);
-    QImage Image=ImageCenter(image,ui->label_show);
-    ui->label_show->setPixmap(QPixmap::fromImage(Image));
-    ui->label_show->setAlignment(Qt::AlignCenter);
+    ui->label_show->setPhoto(srcDirPath);
+    //QImage image(srcDirPath);
+    //QImage Image=ImageCenter(image,ui->label_show);
+    //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+    //ui->label_show->setAlignment(Qt::AlignCenter);
     origin_path=srcDirPath;
 
     ui->statusbar->showMessage(srcDirPath);
@@ -165,7 +170,7 @@ void MainWindow::on_action_SP_triggered() {
 //选择图片
 void MainWindow::on_pushButton_select_clicked() {
     QMESSAGE_BOX_CROPPING
-    QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp *.tif)"));
+        QStringList srcDirPathListS = QFileDialog::getOpenFileNames(this, tr("选择图片"), "C:", tr("图像文件(*.jpg *.png *.bmp *.tif *.jpeg)"));
     if(srcDirPathListS.size()>0)
     {
         ui->tabWidget->setCurrentIndex(0);
@@ -175,11 +180,12 @@ void MainWindow::on_pushButton_select_clicked() {
         srcDirPathListS.clear();
         index =0;
         QString srcDirPath = srcDirPathList.at(index);
-        QImage image(srcDirPath);
-        QImage Image=ImageCenter(image,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage image(srcDirPath);
+        //QImage Image=ImageCenter(image,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
         origin_path=srcDirPath;
+        ui->label_show->setPhoto(srcDirPath);
 
         ui->statusbar->showMessage(srcDirPath);
     }
@@ -189,16 +195,16 @@ void MainWindow::on_pushButton_select_clicked() {
 //保存
 void MainWindow::on_pushButton_save_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(!ui->label_show->pixmap().isNull()){
-        QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF")); //选择路径
+        if(!ui->label_show->getImage().isNull()){
+        QString filename = QFileDialog::getSaveFileName(this,tr("保存图片"),"C:",tr("*.png;; *.jpg;; *.bmp;; *.tif;; *.GIF;; *.jpeg")); //选择路径
         if (filename.isEmpty()) {
-                return;
+            return;
         }
         else{
-            if (!(ui->label_show->pixmap().toImage().save(filename))) //保存图像
+            if (!(ui->label_show->getImage().save(filename))) //保存图像
             {
-                    QMessageBox::information(this,tr("图片保存成功！"),tr("图片保存失败！"));
-                    return;
+                QMessageBox::information(this,tr("图片保存成功！"),tr("图片保存失败！"));
+                return;
             }
             ui->statusbar->showMessage("图片保存成功！");
         }
@@ -211,7 +217,7 @@ void MainWindow::on_pushButton_save_clicked() {
 void MainWindow::on_pushButton_origin_clicked()
 {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
+        if(!ui->label_show->getImage().isNull()){
         // ==== 先重置所有参数 ====
         ui->horizontalSlider_gaussianFilter->setValue(0);
         ui->horizontalSlider_light->setValue(0);
@@ -228,13 +234,15 @@ void MainWindow::on_pushButton_origin_clicked()
         // =========================================================
 
         // 直接读取原图
-        QImage image(origin_path);
-        QImage Image=ImageCenter(image,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage image(origin_path);
+        //QImage Image=ImageCenter(image,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        origin_path = ui->label_show->imgPath;
+        ui->label_show->showOriginalImage(origin_path);
 
         // 重置 cur_img
-        cur_img = ui->label_show->pixmap().toImage();
+        cur_img = ui->label_show->getImage();
 
     }else{
         QMESSAGE_BOX_NO_IMG
@@ -245,14 +253,15 @@ void MainWindow::on_pushButton_origin_clicked()
 void MainWindow::on_pushButton_gray_clicked()
 {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        //QImage image(ui->label_show->pixmap().toImage());
 
-        QImage images=imgProcessor->gray(image);
+        QImage images=imgProcessor->gray(ui->label_show->getImage());
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+       //ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -263,11 +272,12 @@ void MainWindow::on_pushButton_gray_clicked()
 void MainWindow::on_pushButton_mirrored_clicked()
 {
     QMESSAGE_BOX_CROPPING
-    if(!ui->label_show->pixmap().isNull()){
-        QImage images(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage images(ui->label_show->getImage());
         images = images.mirrored(true, false);
-        ui->label_show->setPixmap(QPixmap::fromImage(images));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
+        //ui->label_show->setPixmap(QPixmap::fromImage(images));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
         //cur_img = ui->label_show->pixmap().toImage();
     }
     else{
@@ -278,14 +288,14 @@ void MainWindow::on_pushButton_mirrored_clicked()
 // 顺时针旋转
 void MainWindow::on_pushButton_turnright_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(!ui->label_show->pixmap().isNull()){
-        QImage images(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage images(ui->label_show->getImage());
         QTransform matrix;
         matrix.rotate(90.0);//顺时针旋转90度
         images= images.transformed(matrix,Qt::FastTransformation);
-
-        ui->label_show->setPixmap(QPixmap::fromImage(images));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
+        //ui->label_show->setPixmap(QPixmap::fromImage(images));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -295,14 +305,14 @@ void MainWindow::on_pushButton_turnright_clicked() {
 // 逆时针旋转
 void MainWindow::on_pushButton_turnleft_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(!ui->label_show->pixmap().isNull()){
-        QImage images(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage images(ui->label_show->getImage());
         QTransform matrix;
         matrix.rotate(-90.0);//逆时针旋转90度
         images= images.transformed(matrix,Qt::FastTransformation);
-
-        ui->label_show->setPixmap(QPixmap::fromImage(images));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
+        //ui->label_show->setPixmap(QPixmap::fromImage(images));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -313,14 +323,15 @@ void MainWindow::on_pushButton_turnleft_clicked() {
 void MainWindow::on_pushButton_edge_detection_clicked()
 {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage newImage = imgProcessor->EdgeDetection(image);
 
-        QImage Image=ImageCenter(newImage,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(newImage,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(newImage);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -330,13 +341,14 @@ void MainWindow::on_pushButton_edge_detection_clicked()
 // 伽马变换
 void MainWindow::on_pushButton_gamma_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         QImage images=imgProcessor->gamma(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -346,10 +358,10 @@ void MainWindow::on_pushButton_gamma_clicked() {
 // 亮度滑块
 void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
     QMESSAGE_BOX_CROPPING
-    if(!value){return;} // 加速重置
-    if(origin_path!=nullptr){
+        if(!value){return;} // 加速重置
+    if(!ui->label_show->getImage().isNull()){
         if(slider_save["light"] == 0){
-            cur_img = ui->label_show->pixmap().toImage();
+            cur_img = ui->label_show->getImage();
         }
         QImage image(cur_img);
         int red, green, blue;
@@ -367,9 +379,10 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
             data[i] = qRgba(red, green, blue, qAlpha(data[i]));
         }
 
-        QImage Image=ImageCenter(image,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(image,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(image);
         slider_save["light"] = value;
     }
     else{
@@ -380,17 +393,18 @@ void MainWindow::on_horizontalSlider_light_valueChanged(int value) {
 //对比度滑块
 void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
     QMESSAGE_BOX_CROPPING
-    if(!value){return;} // 加速重置
-    if(origin_path!=nullptr){
+        if(!value){return;} // 加速重置
+    if(!ui->label_show->getImage().isNull()){
         if(slider_save["contrast"] == 0){
-            cur_img = ui->label_show->pixmap().toImage();
+            cur_img = ui->label_show->getImage();
         }
         QImage image(cur_img);
         QImage images=imgProcessor->AdjustContrast(image,value);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
         slider_save["contrast"] = value;
     }
     else{
@@ -402,17 +416,18 @@ void MainWindow::on_horizontalSlider_Contrast_valueChanged(int value) {
 //饱和度滑块
 void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
     QMESSAGE_BOX_CROPPING
-    if(!value){return;} // 加速重置
-    if(origin_path!=nullptr){
+        if(!value){return;} // 加速重置
+    if(!ui->label_show->getImage().isNull()){
         if(slider_save["saturation"] == 0){
-            cur_img = ui->label_show->pixmap().toImage();
+            cur_img = ui->label_show->getImage();
         }
         QImage image(cur_img);
         QImage images=imgProcessor->AdjustSaturation(image,value);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
         slider_save["saturation"] = value;
     }
     else{
@@ -424,13 +439,14 @@ void MainWindow::on_horizontalSlider_Saturation_valueChanged(int value) {
 // 直方均衡
 void MainWindow::on_pushButton_equalizeHist_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         QImage newImage = imgProcessor->equalizeHistogram(image);
 
-        QImage Image=ImageCenter(newImage,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(newImage,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(newImage);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -440,18 +456,19 @@ void MainWindow::on_pushButton_equalizeHist_clicked() {
 // 高斯模糊滑块
 void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
     QMESSAGE_BOX_CROPPING
-    if(!value){return;} // 加速重置
+        if(!value){return;} // 加速重置
 
-    if(origin_path!=nullptr){
+    if(!ui->label_show->getImage().isNull()){
         if(slider_save["gaussian"] == 0){
-            cur_img = ui->label_show->pixmap().toImage();
+            cur_img = ui->label_show->getImage();
         }
         QImage image(cur_img);
         QImage images=imgProcessor->GaussianFilter(image, static_cast<double>(value * 20.0 / 100.0));
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
         slider_save["gaussian"] = value;
     }
     else{
@@ -463,14 +480,15 @@ void MainWindow::on_horizontalSlider_gaussianFilter_valueChanged(int value) {
 void MainWindow::on_pushButton_sharp_clicked()
 {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->Sharpen(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -479,13 +497,13 @@ void MainWindow::on_pushButton_sharp_clicked()
 
 // 裁剪模块
 void MainWindow::on_pushButton_cropper_clicked() {
-    if(origin_path!=nullptr){
+    if(!ui->label_show->getImage().isNull()){
         if(!cropper) {
             // 创建控件，并设置固定大小
-            QPixmap crop_img = ui->label_show->pixmap();
+            crop_img = QPixmap::fromImage(ui->label_show->getImage());
             imgCropperLabel = new ImageCropperLabel(200, 200, ui->label_show);
             connect(imgCropperLabel,SIGNAL(croppedImageChanged()),this,SLOT(cropImgShow())); // 信号绑定，接受裁剪框变化信号
-            // 设置（圆形）裁剪器
+            // 设置（方形）裁剪器
             imgCropperLabel->setRectCropper();
             // 设置原始图像
             imgCropperLabel->setOriginalImage(crop_img);
@@ -507,9 +525,10 @@ void MainWindow::on_pushButton_cropper_clicked() {
 
             cropper = true;
         }else{
-            QImage Image=ImageCenter(ui->label_show->pixmap().toImage(),ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(ui->label_show->pixmap().toImage(),ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(crop_img.toImage());
             imgCropperLabel->close();
             delete imgCropperLabel;
             imgCropperLabel = nullptr;
@@ -525,11 +544,12 @@ void MainWindow::on_pushButton_cropper_clicked() {
 // 用户调整裁剪区域时，会触发 croppedImageChanged() 信号
 // 调用 getCroppedImage() 可以获取裁剪区域的图像
 void MainWindow::cropImgShow() {
-    QPixmap resultImage = imgCropperLabel->getCroppedImage(/*OutputShape::RECT*/);
+    crop_img = imgCropperLabel->getCroppedImage(/*OutputShape::RECT*/);
     // 显示
     //QImage Image=ImageCenter(resultImage.toImage(), ui->label_show);
-    ui->label_show->setPixmap(resultImage);
-    ui->label_show->setAlignment(Qt::AlignCenter);
+    //ui->label_show->setPixmap(resultImage);
+    //ui->label_show->setAlignment(Qt::AlignCenter);
+    ui->label_show->setImage(crop_img.toImage());
 }
 
 
@@ -537,13 +557,14 @@ void MainWindow::cropImgShow() {
 // 均值滤波
 void MainWindow::on_pushButton_meanFilter_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         QImage images=imgProcessor->meanFilter(image, 3);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -553,13 +574,14 @@ void MainWindow::on_pushButton_meanFilter_clicked() {
 // 中值滤波
 void MainWindow::on_pushButton_medianFilter_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         QImage images=imgProcessor->medianFilter(image, 3);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -569,8 +591,8 @@ void MainWindow::on_pushButton_medianFilter_clicked() {
 // 红通道
 void MainWindow::on_checkBox_R_clicked() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         if(ui->checkBox_R->isChecked()) {
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
@@ -581,9 +603,10 @@ void MainWindow::on_checkBox_R_clicked() {
                     image.setPixelColor(x, y, QColor(r, g, b));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         } else if(!ui->checkBox_R->isChecked()) {
             R_img = imgProcessor->redChannel(image);
             for (int y = 0; y < image.height(); ++y) {
@@ -594,9 +617,10 @@ void MainWindow::on_checkBox_R_clicked() {
                     image.setPixelColor(x, y, QColor(0, g, b));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         }
     }
     else{
@@ -607,8 +631,8 @@ void MainWindow::on_checkBox_R_clicked() {
 // 绿通道
 void MainWindow::on_checkBox_G_clicked() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         if(ui->checkBox_G->isChecked()) {
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
@@ -619,9 +643,10 @@ void MainWindow::on_checkBox_G_clicked() {
                     image.setPixelColor(x, y, QColor(r, g, b));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         } else if(!ui->checkBox_G->isChecked()) {
             G_img = imgProcessor->greenChannel(image);
             for (int y = 0; y < image.height(); ++y) {
@@ -632,9 +657,10 @@ void MainWindow::on_checkBox_G_clicked() {
                     image.setPixelColor(x, y, QColor(r, 0, b));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         }
     }
     else{
@@ -645,8 +671,8 @@ void MainWindow::on_checkBox_G_clicked() {
 // blue通道
 void MainWindow::on_checkBox_B_clicked() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
         if(ui->checkBox_B->isChecked()) {
             for (int y = 0; y < image.height(); ++y) {
                 for (int x = 0; x < image.width(); ++x) {
@@ -657,9 +683,10 @@ void MainWindow::on_checkBox_B_clicked() {
                     image.setPixelColor(x, y, QColor(r, g, b));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         } else if(!ui->checkBox_B->isChecked()) {
             B_img = imgProcessor->blueChannel(image);
             for (int y = 0; y < image.height(); ++y) {
@@ -670,9 +697,10 @@ void MainWindow::on_checkBox_B_clicked() {
                     image.setPixelColor(x, y, QColor(r, g, 0));
                 }
             }
-            QImage Image=ImageCenter(image,ui->label_show);
-            ui->label_show->setPixmap(QPixmap::fromImage(Image));
-            ui->label_show->setAlignment(Qt::AlignCenter);
+            //QImage Image=ImageCenter(image,ui->label_show);
+            //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+            //ui->label_show->setAlignment(Qt::AlignCenter);
+            ui->label_show->setImage(image);
         }
     }
     else{
@@ -731,14 +759,15 @@ void MainWindow::on_action_Ubuntu_triggered() {
 
 void MainWindow::on_action_warm_triggered() {
     QMESSAGE_BOX_CROPPING
-    if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->warm(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -747,14 +776,15 @@ void MainWindow::on_action_warm_triggered() {
 
 void MainWindow::on_action_cold_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->cool(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -763,14 +793,15 @@ void MainWindow::on_action_cold_triggered() {
 
 void MainWindow::on_action_T_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->InverseColor(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -779,14 +810,15 @@ void MainWindow::on_action_T_triggered() {
 
 void MainWindow::on_action_old_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->old(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -795,14 +827,15 @@ void MainWindow::on_action_old_triggered() {
 
 void MainWindow::on_action_PencilSketchFilter_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->PencilSketchFilter(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -811,14 +844,15 @@ void MainWindow::on_action_PencilSketchFilter_triggered() {
 
 void MainWindow::on_action_MosaicFilter_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->MosaicFilter(image, 10);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -828,14 +862,15 @@ void MainWindow::on_action_MosaicFilter_triggered() {
 
 void MainWindow::on_action_MeltFilter_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->MeltFilter(image, 10);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
@@ -844,16 +879,44 @@ void MainWindow::on_action_MeltFilter_triggered() {
 
 void MainWindow::on_action_FreezeFilter_triggered() {
     QMESSAGE_BOX_CROPPING
-        if(origin_path!=nullptr){
-        QImage image(ui->label_show->pixmap().toImage());
+        if(!ui->label_show->getImage().isNull()){
+        QImage image(ui->label_show->getImage());
 
         QImage images=imgProcessor->FreezeFilter(image);
 
-        QImage Image=ImageCenter(images,ui->label_show);
-        ui->label_show->setPixmap(QPixmap::fromImage(Image));
-        ui->label_show->setAlignment(Qt::AlignCenter);
+        //QImage Image=ImageCenter(images,ui->label_show);
+        //ui->label_show->setPixmap(QPixmap::fromImage(Image));
+        //ui->label_show->setAlignment(Qt::AlignCenter);
+        ui->label_show->setImage(images);
     }
     else{
         QMESSAGE_BOX_NO_IMG
     }
 }
+
+void MainWindow::on_pushButton_clicked(){
+    if(!ui->label_show->getImage().isNull()){
+        ui->label_show->onZoomInImage();
+    }else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+
+void MainWindow::on_pushButton_2_clicked(){
+    if(!ui->label_show->getImage().isNull()){
+        ui->label_show->onZoomOutImage();
+    }else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+
+
+void MainWindow::on_pushButton_3_clicked(){
+    if(!ui->label_show->getImage().isNull()){
+        ui->label_show->onPresetImage();
+    }else{
+        QMESSAGE_BOX_NO_IMG
+    }
+}
+

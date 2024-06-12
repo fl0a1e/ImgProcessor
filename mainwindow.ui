@@ -281,7 +281,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1">
          <item>
-          <widget class="QLabel" name="label_show">
+          <widget class="PhotoLabel" name="label_show">
            <property name="text">
             <string/>
            </property>
@@ -289,6 +289,40 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>放大</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="text">
+              <string>缩小</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="text">
+              <string>还原大小</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <spacer name="horizontalSpacer_3">
              <property name="orientation">
@@ -531,6 +565,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PhotoLabel</class>
+   <extends>QLabel</extends>
+   <header>photolabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
